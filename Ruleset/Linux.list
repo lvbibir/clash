@@ -1,1 +1,14 @@
+# 技术网站
 DOMAIN-SUFFIX,ceph.com
+
+# 订阅转换API
+DOMAIN-SUFFIX,subcon.dlj.tf
+DOMAIN-SUFFIX,bianyuan.xyz
+DOMAIN-SUFFIX,dler.io
+
+# Blog
+DOMAIN-SUFFIX,limbopro.xyz
+DOMAIN-SUFFIX,merlinblog.xyz
+DOMAIN-SUFFIX,yattazen.com
+DOMAIN-SUFFIX,shop.yattazen.com
+DOMAIN,jdsharedresourcescdn.azureedge.net
