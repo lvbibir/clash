@@ -1,7 +1,5 @@
 # 技术网站
 DOMAIN-SUFFIX,ceph.com
-DOMAIN-SUFFIX,docker.com
-DOMAIN-SUFFIX,github.com
 
 # 订阅转换API
 DOMAIN-SUFFIX,subcon.dlj.tf
