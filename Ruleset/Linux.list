@@ -12,3 +12,6 @@ DOMAIN-SUFFIX,merlinblog.xyz
 DOMAIN-SUFFIX,yattazen.com
 DOMAIN-SUFFIX,shop.yattazen.com
 DOMAIN,jdsharedresourcescdn.azureedge.net
+
+# Notion
+# DOMAIN-SUFFIX,notion.so
