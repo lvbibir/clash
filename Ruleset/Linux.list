@@ -1,3 +1,4 @@
+# 个人列表，默认走代理
 # 技术网站
 DOMAIN-SUFFIX,ceph.com
 
@@ -13,5 +14,18 @@ DOMAIN-SUFFIX,yattazen.com
 DOMAIN-SUFFIX,shop.yattazen.com
 DOMAIN,jdsharedresourcescdn.azureedge.net
 
-# Notion
-# DOMAIN-SUFFIX,notion.so
+# 18+
+DOMAIN-SUFFIX,91porn.com
+DOMAIN-SUFFIX,91porny.com
+DOMAIN-SUFFIX,jiuse.cloud
+DOMAIN-SUFFIX,av01.tv
+DOMAIN-SUFFIX,netflav.com
+DOMAIN-SUFFIX,18comic.vip
+DOMAIN-SUFFIX,18comic.org
+DOMAIN-SUFFIX,ackcdn.net
+DOMAIN-SUFFIX,gimy.app
+DOMAIN-SUFFIX,avday.tv
+DOMAIN-SUFFIX,erocool.com
+DOMAIN-SUFFIX,erocool.me
+DOMAIN-SUFFIX,pthcdn.xyz
+
