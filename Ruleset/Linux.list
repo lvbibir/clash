@@ -1,6 +1,7 @@
 # 个人列表，默认走代理
 # 技术网站
 DOMAIN-SUFFIX,ceph.com
+DOMAIN-SUFFIX,gohugo.io
 
 # 订阅转换API
 DOMAIN-SUFFIX,subcon.dlj.tf
