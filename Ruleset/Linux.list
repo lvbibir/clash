@@ -3,7 +3,7 @@
 DOMAIN-SUFFIX,ceph.com
 DOMAIN-SUFFIX,gohugo.io
 DOMAIN-SUFFIX,oracle.com
-
+DOMAIN-SUFFIX,notion.so
 
 # 订阅转换API
 DOMAIN-SUFFIX,subcon.dlj.tf
