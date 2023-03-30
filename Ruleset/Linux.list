@@ -5,6 +5,10 @@ DOMAIN-SUFFIX,gohugo.io
 DOMAIN-SUFFIX,oracle.com
 DOMAIN-SUFFIX,notion.so
 
+# game
+DOMAIN-SUFFIX,steamdb.info
+
+
 # 订阅转换API
 DOMAIN-SUFFIX,subcon.dlj.tf
 DOMAIN-SUFFIX,bianyuan.xyz
