@@ -9,8 +9,10 @@ DOMAIN-SUFFIX,notion.so
 DOMAIN-SUFFIX,steamdb.info
 
 # onedrive
-DOMAIN,onedrive.live.com
 DOMAIN,api.onedrive.com
+DOMAIN,onedrive.live.com
+DOMAIN-SUFFIX,onedrive.live.com
+DOMAIN-SUFFIX,shellprod.msocdn.com
 
 # 订阅转换API
 DOMAIN-SUFFIX,subcon.dlj.tf
