@@ -10,7 +10,7 @@ DOMAIN-SUFFIX,steamdb.info
 
 # onedrive
 DOMAIN,onedrive.live.com
-
+PROCESS-NAME,OneDrive.exe
 
 # 订阅转换API
 DOMAIN-SUFFIX,subcon.dlj.tf
