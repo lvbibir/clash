@@ -12,7 +12,7 @@ DOMAIN-SUFFIX,steamdb.info
 DOMAIN,api.onedrive.com
 DOMAIN,onedrive.live.com
 DOMAIN-SUFFIX,onedrive.live.com
-DOMAIN-SUFFIX,shellprod.msocdn.com
+DOMAIN-SUFFIX,msocdn.com
 
 # 订阅转换API
 DOMAIN-SUFFIX,subcon.dlj.tf
