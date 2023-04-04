@@ -8,6 +8,9 @@ DOMAIN-SUFFIX,notion.so
 # game
 DOMAIN-SUFFIX,steamdb.info
 
+# onedrive
+DOMAIN,onedrive.live.com
+
 
 # 订阅转换API
 DOMAIN-SUFFIX,subcon.dlj.tf
