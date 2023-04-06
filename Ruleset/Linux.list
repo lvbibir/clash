@@ -6,7 +6,7 @@ DOMAIN-SUFFIX,oracle.com
 DOMAIN-SUFFIX,notion.so
 DOMAIN-SUFFIX,tigera.io
 DOMAIN-SUFFIX,projectcalico.org
-
+DOMAIN-SUFFIX,kubernetes.io
 
 # game
 DOMAIN-SUFFIX,steamdb.info
