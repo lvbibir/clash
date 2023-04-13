@@ -7,6 +7,8 @@ DOMAIN-SUFFIX,notion.so
 DOMAIN-SUFFIX,tigera.io
 DOMAIN-SUFFIX,projectcalico.org
 DOMAIN-SUFFIX,kubernetes.io
+DOMAIN-SUFFIX,helm.sh
+
 
 # game
 DOMAIN-SUFFIX,steamdb.info
