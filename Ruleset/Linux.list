@@ -1,6 +1,6 @@
 # 个人列表，默认走代理
 # 技术网站
-DOMAIN-SUFFIX,sm.ms
+DOMAIN-SUFFIX,ghost.io
 DOMAIN-SUFFIX,ceph.com
 DOMAIN-SUFFIX,gohugo.io
 DOMAIN-SUFFIX,oracle.com
