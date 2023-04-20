@@ -1,5 +1,6 @@
 # 个人列表，默认走代理
 # 技术网站
+DOMAIN-SUFFIX,netlify.app
 DOMAIN-SUFFIX,netlify.com
 DOMAIN-SUFFIX,k8s.io
 DOMAIN-SUFFIX,traefik.io
