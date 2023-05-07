@@ -14,6 +14,11 @@ DOMAIN-SUFFIX,projectcalico.org
 DOMAIN-SUFFIX,kubernetes.io
 DOMAIN-SUFFIX,helm.sh
 
+# Blog
+DOMAIN-SUFFIX,limbopro.xyz
+DOMAIN-SUFFIX,merlinblog.xyz
+DOMAIN-SUFFIX,yattazen.com
+DOMAIN-SUFFIX,sctux.com
 
 # game
 DOMAIN-SUFFIX,steamdb.info
@@ -30,13 +35,6 @@ DOMAIN-SUFFIX,bianyuan.xyz
 DOMAIN-SUFFIX,dler.io
 DOMAIN-SUFFIX,suo.yt
 
-# Blog
-DOMAIN-SUFFIX,limbopro.xyz
-DOMAIN-SUFFIX,merlinblog.xyz
-DOMAIN-SUFFIX,yattazen.com
-DOMAIN-SUFFIX,shop.yattazen.com
-DOMAIN,jdsharedresourcescdn.azureedge.net
-
 # 18+
 DOMAIN-SUFFIX,91porn.com
 DOMAIN-SUFFIX,91porny.com
@@ -51,4 +49,3 @@ DOMAIN-SUFFIX,avday.tv
 DOMAIN-SUFFIX,erocool.com
 DOMAIN-SUFFIX,erocool.me
 DOMAIN-SUFFIX,pthcdn.xyz
-
