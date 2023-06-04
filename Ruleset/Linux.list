@@ -25,6 +25,10 @@ DOMAIN-SUFFIX,steamcommunity.com
 DOMAIN-SUFFIX,steamstatic.com
 DOMAIN-SUFFIX,steamdb.info
 
+# 资源站
+DOMAIN-SUFFIX,dmhy.org
+DOMAIN-SUFFIX,acg.rip
+
 # onedrive
 DOMAIN,api.onedrive.com
 DOMAIN,onedrive.live.com
@@ -40,14 +44,9 @@ DOMAIN-SUFFIX,suo.yt
 # 18+
 DOMAIN-SUFFIX,91porn.com
 DOMAIN-SUFFIX,91porny.com
-DOMAIN-SUFFIX,jiuse.cloud
 DOMAIN-SUFFIX,av01.tv
 DOMAIN-SUFFIX,netflav.com
 DOMAIN-SUFFIX,18comic.vip
 DOMAIN-SUFFIX,18comic.org
 DOMAIN-SUFFIX,ackcdn.net
 DOMAIN-SUFFIX,gimy.app
-DOMAIN-SUFFIX,avday.tv
-DOMAIN-SUFFIX,erocool.com
-DOMAIN-SUFFIX,erocool.me
-DOMAIN-SUFFIX,pthcdn.xyz
