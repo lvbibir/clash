@@ -28,6 +28,8 @@ DOMAIN-SUFFIX,steamdb.info
 # 资源站
 DOMAIN-SUFFIX,dmhy.org
 DOMAIN-SUFFIX,acg.rip
+DOMAIN-SUFFIX,bangumi.moe
+
 
 # onedrive
 DOMAIN,api.onedrive.com
