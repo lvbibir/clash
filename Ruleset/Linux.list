@@ -1,4 +1,13 @@
 # 个人列表，默认走代理
+# game
+DOMAIN-SUFFIX,steamdb.info
+DOMAIN-SUFFIX,sayhuahuo.xyz
+
+# 资源站
+DOMAIN-SUFFIX,dmhy.org
+DOMAIN-SUFFIX,acg.rip
+DOMAIN-SUFFIX,bangumi.moe
+
 # 技术网站
 DOMAIN-SUFFIX,netlify.app
 DOMAIN-SUFFIX,netlify.com
@@ -19,15 +28,6 @@ DOMAIN-SUFFIX,limbopro.xyz
 DOMAIN-SUFFIX,merlinblog.xyz
 DOMAIN-SUFFIX,yattazen.com
 DOMAIN-SUFFIX,sctux.com
-
-# game
-DOMAIN-SUFFIX,steamdb.info
-
-# 资源站
-DOMAIN-SUFFIX,dmhy.org
-DOMAIN-SUFFIX,acg.rip
-DOMAIN-SUFFIX,bangumi.moe
-
 
 # onedrive
 DOMAIN,api.onedrive.com
