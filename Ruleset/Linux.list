@@ -10,6 +10,7 @@ DOMAIN-SUFFIX,bangumi.moe
 DOMAIN-SUFFIX,mangabz.com
 
 # 技术网站
+DOMAIN-SUFFIX,notepad-plus-plus.org
 DOMAIN-SUFFIX,netlify.app
 DOMAIN-SUFFIX,netlify.com
 DOMAIN-SUFFIX,k8s.io
