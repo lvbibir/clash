@@ -1,4 +1,8 @@
 # 个人列表，默认走代理
+# 机场
+DOMAIN-SUFFIX,dog.ssrdog.cc
+DOMAIN-SUFFIX,dog.ssrdog.com
+
 # game
 DOMAIN-SUFFIX,steamdb.info
 DOMAIN-SUFFIX,sayhuahuo.xyz
