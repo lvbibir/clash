@@ -16,6 +16,7 @@ DOMAIN-SUFFIX,bangumi.moe
 DOMAIN-SUFFIX,mangabz.com
 DOMAIN-SUFFIX,last.fm
 DOMAIN-SUFFIX,musicbrainz.org
+DOMAIN-SUFFIX,lastfm.freetls.fastly.net
 
 # 技术网站
 DOMAIN-SUFFIX,notepad-plus-plus.org
