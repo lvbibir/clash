@@ -19,6 +19,7 @@ DOMAIN-SUFFIX,musicbrainz.org
 DOMAIN-SUFFIX,lastfm.freetls.fastly.net
 
 # 技术网站
+DOMAIN-SUFFIX,jenkins.io
 DOMAIN-SUFFIX,notepad-plus-plus.org
 DOMAIN-SUFFIX,netlify.app
 DOMAIN-SUFFIX,netlify.com
