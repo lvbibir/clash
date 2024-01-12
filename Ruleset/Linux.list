@@ -44,7 +44,7 @@ DOMAIN-SUFFIX,sctux.com
 # onedrive
 # DOMAIN,api.onedrive.com
 # DOMAIN,onedrive.live.com
-# DOMAIN-SUFFIX,onedrive.live.com
+DOMAIN-SUFFIX,onedrive.live.com
 # DOMAIN-SUFFIX,msocdn.com
 
 # 订阅转换API
