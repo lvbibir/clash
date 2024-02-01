@@ -1,4 +1,10 @@
 # 个人列表，默认走代理
+
+# 二次元
+DOMAIN-SUFFIX,copymanga.site
+DOMAIN-KEYWORD,copymanga
+DOMAIN-SUFFIX,mangafuna.xyz
+
 # 机场
 DOMAIN-SUFFIX,dog.ssrdog.cc
 DOMAIN-SUFFIX,dog.ssrdog.com
