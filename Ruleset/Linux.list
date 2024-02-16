@@ -1,6 +1,6 @@
 # 个人列表，默认走代理
 
-# 二次元
+# 漫画
 DOMAIN-SUFFIX,copymanga.site
 DOMAIN-KEYWORD,copymanga
 DOMAIN-SUFFIX,mangafuna.xyz
@@ -72,6 +72,8 @@ DOMAIN-SUFFIX,av01.tv
 DOMAIN-SUFFIX,netflav.com
 DOMAIN-SUFFIX,18comic.vip
 DOMAIN-SUFFIX,18comic.org
+DOMAIN-KEYWORD,18comic
+DOMAIN-KEYWORD,picacg
 DOMAIN-SUFFIX,ackcdn.net
 DOMAIN-SUFFIX,gimy.app
 DOMAIN-SUFFIX,e-hentai.org
