@@ -44,6 +44,7 @@ DOMAIN-SUFFIX,tigera.io
 DOMAIN-SUFFIX,projectcalico.org
 DOMAIN-SUFFIX,kubernetes.io
 DOMAIN-SUFFIX,helm.sh
+DOMAIN-SUFFIX,mobatek.net
 
 # Blog
 DOMAIN-SUFFIX,limbopro.xyz
