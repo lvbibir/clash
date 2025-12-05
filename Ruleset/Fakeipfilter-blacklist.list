@@ -1,0 +1,120 @@
+# === LAN / Localhost ===
+*.lan
+*.localdomain
+*.example
+*.invalid
+*.localhost
+*.test
+*.local
+*.home.arpa
+*.direct
+
+# === NTP Time Sync (Must Real IP) ===
+time.*.com
+time.*.gov
+time.*.edu.cn
+time.*.apple.com
+time-ios.apple.com
+ntp.*.com
+*.time.edu.cn
+*.ntp.org.cn
++.pool.ntp.org
+time1.cloud.tencent.com
+
+# === Windows Connectivity Check ===
++.msftconnecttest.com
++.msftncsi.com
+
+# === Google Connectivity (Android Captive Portal) ===
+# 部分安卓原生系统需要此域名直连验证网络
+connectivitycheck.gstatic.com
+
+# === Router Admin Pages ===
+heartbeat.belkin.com
+*.linksys.com
+*.linksyssmartwifi.com
+*.router.asus.com
+miwifi.com
+router.ctc
+router.cpe
+
+# === QQ / WeChat Login (Security Check) ===
+localhost.ptlogin2.qq.com
+localhost.sec.qq.com
+localhost.*.weixin.qq.com
+
+# === Game Downloads (Steam/Xbox/Switch) ===
+# Steam Download CDN (Save Bandwidth)
++.steamcontent.com
+# Nintendo
++.srv.nintendo.net
+*.n.n.srv.nintendo.net
++.cdn.nintendo.net
+# Xbox
+xbox.*.microsoft.com
+xnotify.xboxlive.com
++.xboxlive.com
+# Battle.net
++.battle.net
++.battlenet.com.cn
++.wotgame.cn
++.wggames.cn
++.wowsgame.cn
++.wargaming.net
+
+# === Domestic Music (Optional, ensure local CDN) ===
+# NetEase
+music.163.com
+*.music.163.com
+*.126.net
+# QQ Music
+y.qq.com
+*.y.qq.com
+streamoc.music.tc.qq.com
+mobileoc.music.tc.qq.com
+isure.stream.qqmusic.qq.com
+dl.stream.qqmusic.qq.com
+aqqmusic.tc.qq.com
+amobile.music.tc.qq.com
+# Others
+musicapi.taihe.com
+music.taihe.com
+songsearch.kugou.com
+trackercdn.kugou.com
+*.kuwo.cn
+api-jooxtt.sanook.com
+api.joox.com
+joox.com
+*.xiami.com
+*.music.migu.cn
+music.migu.cn
+
+# === Software Updates ===
+mesu.apple.com
+swscan.apple.com
+swquery.apple.com
+swdownload.apple.com
+swcdn.apple.com
+swdist.apple.com
++.market.xiaomi.com
+
+# === AdGuard / Filter ===
+adguardteam.github.io
+adrules.top
+anti-ad.net
+local.adguard.org
+static.adtidy.org
+
+# === Tools / Remote Control ===
+# TeamViewer / Sunflower / ToDesk often need real IP
++.oray.com
++.orayimg.com
++.teamviewer.com
+
+# === Special Networks ===
+# Wifi Calling
++.3gppnetwork.org
++.pub.3gppnetwork.org
+# DDNS
+*.synology.me
+*.quickconnect.to
