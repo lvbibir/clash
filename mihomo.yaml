@@ -1,7 +1,23 @@
+# 全局配置 
+mixed-port: 7890
+allow-lan: true
+bind-address: "*"
+ipv6: false
+unified-delay: true
+tcp-concurrent: true
+log-level: warning
+find-process-mode: 'off'
+global-client-fingerprint: chrome
+keep-alive-idle: 600
+keep-alive-interval: 15
+profile:
+  store-selected: true
+  store-fake-ip: true
+
 proxy-providers:
   # === 主订阅 ===
   01_Main:
-    url: "-----"
+    url: "---------"
     type: http
     interval: 86400
     health-check:
@@ -10,11 +26,12 @@ proxy-providers:
       interval: 300
     # 关键配置：添加前缀，便于区分
     override:
-      additional-prefix: "[主]"
+      additional-prefix: "0.主 "
+    proxy: 直连
 
   # === 备订阅 ===
   02_Backup:
-    url: "-----"
+    url: "---------"
     type: http
     interval: 86400
     health-check:
@@ -23,7 +40,58 @@ proxy-providers:
       interval: 300
     # 关键配置：添加前缀，便于区分
     override:
-      additional-prefix: "[备]"
+      additional-prefix: "1.备 "
+    proxy: 直连
+
+# 入站
+tun:
+  enable: true
+  # system/gvisor/mixed
+  stack: mixed
+  dns-hijack: ["any:53", "tcp://any:53"]
+  mtu: 1500
+
+# DNS 配置
+dns:
+  enable: true
+  cache-algorithm: arc
+  listen: 0.0.0.0:1053
+  ipv6: false
+  respect-rules: true
+  use-hosts: true
+  use-system-hosts: true
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter-mode: blacklist
+  fake-ip-filter:
+    - rule-set:fakeipfilter_blacklist
+  default-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+  proxy-server-nameserver:
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+    - 8.8.8.8
+  nameserver:
+    - 223.5.5.5
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+
+# 嗅探配置
+sniffer:
+  enable: true
+  parse-pure-ip: true  # 处理纯 IP 请求
+  sniff:
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: true
+    TLS:
+      ports: [443, 8443]
+    QUIC:
+      ports: [443, 8443]
+  skip-domain:
+    - "Mijia Cloud"
+    - "+.push.apple.com"
 
 proxies:
   - {name: 直连, type: direct}
@@ -124,9 +192,9 @@ rules:
   - RULE-SET,apple_ip,直连
 
   # 3.【自定义拦截/代理】用户手动指定的规则
-  - DOMAIN-SUFFIX,qichiyu.com,🚀 默认代理
-  - RULE-SET,custom,🚀 默认代理
-  - RULE-SET,proxylite,🚀 默认代理
+  - DOMAIN-SUFFIX,google.com,🚀 默认代理
+  - RULE-SET,custom_proxy,🚀 默认代理
+  - RULE-SET,custom_direct,直连
 
   # 4.【特定应用代理】需要分流的特定 APP
   - RULE-SET,ai,🤖 ChatGPT
@@ -164,14 +232,15 @@ rules:
 rule-anchor:
   ip: &ip {type: http, interval: 86400, behavior: ipcidr, format: mrs}
   domain: &domain {type: http, interval: 86400, behavior: domain, format: mrs}
+  domain_text: &domain_text {type: http, interval: 86400, behavior: domain, format: text}
   class: &class {type: http, interval: 86400, behavior: classical, format: text}
 rule-providers: 
   # 域名规则
   # 自定义规则
-  custom: { <<: *class, url: "https://raw.githubusercontent.com/lvbibir/clash/refs/heads/master/Ruleset/Linux.list"}
-  proxylite: { <<: *class, url: "https://raw.githubusercontent.com/qichiyuhub/rule/refs/heads/main/proxy.list"}
+  custom_proxy: { <<: *class, url: "https://raw.githubusercontent.com/lvbibir/clash/refs/heads/master/Ruleset/Proxy.list"}
+  custom_direct: { <<: *class, url: "https://raw.githubusercontent.com/lvbibir/clash/refs/heads/master/Ruleset/Direct.list"}
+  fakeipfilter_blacklist: { <<: *domain_text, url: "https://raw.githubusercontent.com/lvbibir/clash/refs/heads/master/Ruleset/Fakeipfilter-blacklist.list"}
 
-  # fakeipfilter_domain: { <<: *domain, url: "https://raw.githubusercontent.com/wwqgtxx/clash-rules/release/fakeip-filter.mrs"}
   private_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs"}
   ai: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs" }
   youtube_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/youtube.mrs"}

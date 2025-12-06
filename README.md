@@ -2,17 +2,23 @@
 
 自用 clash 分流规则
 
+# mihomo wiki
+
+https://wiki.metacubex.one/
+
+
 # 佬们
 
-https://yattazen.com/tutorial/clash-custom-config.html
-https://www.qichiyu.com/395.html
+lvbibir.ini 来源 https://yattazen.com/tutorial/clash-custom-config.html
 
-# mihomo wiki 快捷配置
+mihomo.yaml 来源 https://github.com/qichiyuhub/rule/blob/main/config/mihomo/config.yaml
 
-https://wiki.metacubex.one/example/conf
+Fakeipfilter-blacklist.list 来源 https://github.com/juewuy/ShellCrash/blob/dev/public/fake_ip_filter.list
 
 # 订阅托管API
 
 https://acl4ssr-sub.github.io/
+
 https://bianyuan.xyz/
+
 https://sub.dler.io/
