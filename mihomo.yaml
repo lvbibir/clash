@@ -6,7 +6,7 @@ ipv6: false
 unified-delay: true
 tcp-concurrent: true
 log-level: warning
-find-process-mode: 'off'
+find-process-mode: always
 global-client-fingerprint: chrome
 keep-alive-idle: 600
 keep-alive-interval: 15
@@ -17,7 +17,7 @@ profile:
 proxy-providers:
   # === 主订阅 ===
   01_Main:
-    url: "---------"
+    url: "---"
     type: http
     interval: 86400
     health-check:
@@ -31,7 +31,7 @@ proxy-providers:
 
   # === 备订阅 ===
   02_Backup:
-    url: "---------"
+    url: "---"
     type: http
     interval: 86400
     health-check:
@@ -68,14 +68,17 @@ dns:
   default-nameserver:
     - 223.5.5.5
     - 119.29.29.29
+  direct-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
   proxy-server-nameserver:
-    - https://dns.alidns.com/dns-query
     - https://doh.pub/dns-query
+    - https://dns.alidns.com/dns-query
     - 8.8.8.8
   nameserver:
     - 223.5.5.5
-    - https://dns.alidns.com/dns-query
     - https://doh.pub/dns-query
+    - https://dns.alidns.com/dns-query
 
 # 嗅探配置
 sniffer:
@@ -141,17 +144,16 @@ common-proxies-direct: &pr_direct
 proxy-groups:
   # --- 功能策略组 (使用锚点 *pr *pr_direct) ---
   - {name: 🚀 默认代理, type: select, proxies: *pr}
-  - {name: 📹 YouTube, type: select, proxies: *pr}
-  - {name: 🍀 Google, type: select, proxies: *pr}
-  - {name: 🤖 ChatGPT, type: select, proxies: *pr}
-  - {name: 👨🏿‍💻 GitHub, type: select, proxies: *pr}
+  - {name: 🤖 AI, type: select, proxies: *pr}
   - {name: 🎮 Steam, type: select, proxies: *pr_direct}
   - {name: 🐬 OneDrive, type: select, proxies: *pr_direct}
   - {name: Ⓜ️ Microsoft, type: select, proxies: *pr}
-  - {name: 🎵 TikTok, type: select, proxies: *pr}
-  - {name: 📲 Telegram, type: select, proxies: *pr}
-  - {name: 🎥 NETFLIX, type: select, proxies: *pr}
-  - {name: 💶 PayPal, type: select, proxies: *pr}
+  - {name: 👨🏿‍💻 GitHub, type: select, proxies: *pr}
+  - {name: ✖️ X, type: select, proxies: *pr}
+  - {name: 🎧 Sony, type: select, proxies: *pr}
+  - {name: ✈️ Telegram, type: select, proxies: *pr}
+  - {name: 🍀 Google, type: select, proxies: *pr}
+  - {name: 📹 YouTube, type: select, proxies: *pr}
   - {name: 🐟 漏网之鱼, type: select, proxies: *pr}
 
   # --- 地区节点选择 (Select - 手动选择) ---
@@ -192,22 +194,27 @@ rules:
   - RULE-SET,apple_ip,直连
 
   # 3.【自定义拦截/代理】用户手动指定的规则
+  - DOMAIN-SUFFIX,steamcommunity.com,🚀 默认代理
+  - DOMAIN,store.steampowered.com,🚀 默认代理
+  - DOMAIN,api.steampowered.com,🚀 默认代理
+  - DOMAIN,login.steampowered.com,🚀 默认代理
+  - DOMAIN,steam-chat.com,🚀 默认代理
+  - DOMAIN,help.steampowered.com,🚀 默认代理
+  - DOMAIN-SUFFIX,steamstatic.com,🚀 默认代理
   - DOMAIN-SUFFIX,google.com,🚀 默认代理
   - RULE-SET,custom_proxy,🚀 默认代理
   - RULE-SET,custom_direct,直连
 
   # 4.【特定应用代理】需要分流的特定 APP
-  - RULE-SET,ai,🤖 ChatGPT
-  - RULE-SET,github_domain,👨🏿‍💻 GitHub
   - RULE-SET,steam_domain,🎮 Steam
   - RULE-SET,onedrive_domain,🐬 OneDrive
+  - RULE-SET,ai_domain,🤖 AI
+  - RULE-SET,x_domain,✖️ X
+  - RULE-SET,github_domain,👨🏿‍💻 GitHub
+  - RULE-SET,telegram_domain,✈️ Telegram
+  - RULE-SET,telegram_ip,✈️ Telegram
+  - RULE-SET,sony_domain,🎧 Sony
   - RULE-SET,microsoft_domain,Ⓜ️ Microsoft
-  - RULE-SET,tiktok_domain,🎵 TikTok
-  - RULE-SET,telegram_domain,📲 Telegram
-  - RULE-SET,telegram_ip,📲 Telegram
-  - RULE-SET,netflix_domain,🎥 NETFLIX
-  - RULE-SET,netflix_ip,🎥 NETFLIX
-  - RULE-SET,paypal_domain,💶 PayPal
   
   # 5.【通用大厂代理】
   - RULE-SET,youtube_domain,📹 YouTube
@@ -215,14 +222,14 @@ rules:
   - RULE-SET,google_ip,🍀 Google
 
   # 6.【国内规则】(性能优化关键点)
-  # ⚠️ 必须把 CN 规则放在 "geolocation-!cn" 之前！
+  # ⚠️ 必须把 CN 规则放在 "geolocation-!cn_domain" 之前！
   # 逻辑：如果是国内域名->直接走，不用去匹配后面庞大的“非国内”列表。
   - RULE-SET,cn_domain,直连
   - RULE-SET,cn_ip,直连
 
   # 7.【兜底规则】
   # 如果上面都没匹配中，判断是不是“非中国IP/域名”。如果是，走默认代理。
-  - RULE-SET,geolocation-!cn,🚀 默认代理
+  - RULE-SET,geolocation-!cn_domain,🚀 默认代理
   
   # 8.【最终漏网之鱼】
   # 既不是国内，也不在已知非国内列表里，全走代理（白名单模式，防墙）
@@ -242,20 +249,19 @@ rule-providers:
   fakeipfilter_blacklist: { <<: *domain_text, url: "https://raw.githubusercontent.com/lvbibir/clash/refs/heads/master/Ruleset/Fakeipfilter-blacklist.list"}
 
   private_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs"}
-  ai: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs" }
+  ai_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs" }
+  x_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/x.mrs"}
   youtube_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/youtube.mrs"}
   google_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/google.mrs"}
   github_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/github.mrs"}
   steam_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/steam.mrs"}
+  sony_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/sony.mrs"}
   telegram_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/telegram.mrs"}
-  netflix_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/netflix.mrs"}
-  paypal_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/paypal.mrs"}
   onedrive_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/onedrive.mrs"}
   microsoft_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/microsoft.mrs"}
   apple_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/apple.mrs"}
   speedtest_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/ookla-speedtest.mrs"}
-  tiktok_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tiktok.mrs"}
-  geolocation-!cn: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.mrs"}
+  geolocation-!cn_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.mrs"}
   cn_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs"}
   
   # IP 规则
@@ -263,5 +269,4 @@ rule-providers:
   cn_ip: { <<: *ip, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs"}
   google_ip: { <<: *ip, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/google.mrs"}
   telegram_ip: { <<: *ip, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/telegram.mrs"}
-  netflix_ip: { <<: *ip, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/netflix.mrs"}
   apple_ip: {<<: *ip, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo-lite/geoip/apple.mrs"}

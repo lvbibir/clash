@@ -10,6 +10,10 @@
 *.home.arpa
 *.direct
 
+# steam ipv6 检查
++.ipv6check-http.steamserver.net
++.ipv6check-udp.steamserver.net
+
 # 放行NTP服务
 time.*.com
 time.*.gov

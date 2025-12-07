@@ -30,13 +30,13 @@ DOMAIN-SUFFIX,mangafunb.fun
 DOMAIN-SUFFIX,dog.ssrdog.cc
 DOMAIN-SUFFIX,dog.ssrdog.com
 
-# game
-DOMAIN-SUFFIX,steamdb.info
-DOMAIN-SUFFIX,sayhuahuo.xyz
+# steam 社区 登录
+DOMAIN,api.steampowered.com
+DOMAIN,store.steampowered.com
+DOMAIN,steam-chat.com
+DOMAIN,login.steampowered.com
+DOMAIN,help.steampowered.com
 DOMAIN-SUFFIX,steamcommunity.com
-DOMAIN-SUFFIX,isaac.huijiwiki.com
-DOMAIN-SUFFIX,thunderstore.io
-DOMAIN-SUFFIX,huijiwiki.com
 
 # 资源站
 DOMAIN-SUFFIX,unpkg.com
@@ -47,6 +47,10 @@ DOMAIN-SUFFIX,mangabz.com
 DOMAIN-SUFFIX,last.fm
 DOMAIN-SUFFIX,musicbrainz.org
 DOMAIN-SUFFIX,lastfm.freetls.fastly.net
+DOMAIN-SUFFIX,steamdb.info
+DOMAIN-SUFFIX,sayhuahuo.xyz
+DOMAIN-SUFFIX,thunderstore.io
+DOMAIN-SUFFIX,huijiwiki.com
 
 # 技术网站
 DOMAIN-SUFFIX,jenkins.io
@@ -73,11 +77,8 @@ DOMAIN-SUFFIX,merlinblog.xyz
 DOMAIN-SUFFIX,yattazen.com
 DOMAIN-SUFFIX,sctux.com
 
-# onedrive
-# DOMAIN,api.onedrive.com
-# DOMAIN,onedrive.live.com
+# onedrive 网页端
 DOMAIN-SUFFIX,onedrive.live.com
-# DOMAIN-SUFFIX,msocdn.com
 
 # 订阅转换API
 DOMAIN-SUFFIX,subcon.dlj.tf
