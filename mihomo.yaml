@@ -6,13 +6,19 @@ ipv6: false
 unified-delay: true
 tcp-concurrent: true
 log-level: warning
-find-process-mode: always
+find-process-mode: strict
 global-client-fingerprint: chrome
 keep-alive-idle: 600
 keep-alive-interval: 15
 profile:
   store-selected: true
   store-fake-ip: true
+
+geodata-mode: true 
+geodata-loader: memconservative
+geo-update-interval: 24
+geox-url:
+  geosite: https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat
 
 proxy-providers:
   # === 主订阅 ===
@@ -47,9 +53,12 @@ proxy-providers:
 tun:
   enable: true
   # system/gvisor/mixed
-  stack: mixed
+  stack: system
   dns-hijack: ["any:53", "tcp://any:53"]
   mtu: 1500
+  auto-route: true
+  auto-redirect: true
+  auto-detect-interface: true
 
 # DNS 配置
 dns:
@@ -65,20 +74,44 @@ dns:
   fake-ip-filter-mode: blacklist
   fake-ip-filter:
     - rule-set:fakeipfilter_blacklist
+    - rule-set:private_domain
+    - rule-set:cn_domain
+    - geosite:private
+    - geosite:connectivity-check
+    - geosite:cn
+    - geosite:tld-cn
+    - geosite:geolocation-cn
+    - geosite:geolocation-!cn@cn
+
+  # ⚠️ 以下两个 DNS (default & proxy-server)配置请勿随意改为 DoH/DoQ！
+  # ⚠️ 它们必须使用 UDP DNS（如 223.5.5.5）：
+  # ⚠️ 因为启动时代理未就绪，DoH/DoQ 可能无法连接，导致代理无法启动。
+
+  # 用于解析「DNS 服务器自身域名」，以及 Mihomo 启动初期的基础解析。
   default-nameserver:
-    - 223.5.5.5
-    - 119.29.29.29
-  direct-nameserver:
-    - 223.5.5.5
-    - 119.29.29.29
+    - 223.5.5.5                         # 阿里 UDP
+    - 119.29.29.29                      # 腾讯 Pod 备用
+
+  # 解析「代理服务器域名」，防止 nameserver 无法访问导致连不上代理
   proxy-server-nameserver:
-    - https://doh.pub/dns-query
-    - https://dns.alidns.com/dns-query
-    - 8.8.8.8
+    - 223.5.5.5                         # 阿里 UDP
+    - 119.29.29.29                      # 腾讯 Pod 备用
+  
+  # 「直连」域名的解析
+  direct-nameserver:
+    - quic://dns.alidns.com:853        # 阿里 DoQ
+    - https://doh.pub/dns-query        # 腾讯 DNSPod DoH
+    - https://dns.alidns.com/dns-query # 阿里 DoH
+  
+  # 用来解析没有匹配到任何「域名规则」的域名，通常是国外域名，建议使用国外 DoH 防止污染。
+  # 但这个解析结果并不会用来发起连接，所以为了追求速度不使用 DoH 或直接使用国内 DNS 也行。
+  # 追加注解：大多数人的环境通常可以直连境外 DNS 的 UDP(53)（8.8.8.8 / 1.1.1.1）
+  # 但境外 DoH/DoT/DoQ 依旧不可直连，因此不适合作为主要 nameserver
+  # 所以保持国内 DoQ/DoH 作为主解析最可靠
   nameserver:
-    - 223.5.5.5
-    - https://doh.pub/dns-query
-    - https://dns.alidns.com/dns-query
+    - quic://dns.alidns.com:853        # 阿里 DoQ
+    - https://doh.pub/dns-query        # 腾讯 DNSPod DoH
+    - https://dns.alidns.com/dns-query # 阿里 DoH
 
 # 嗅探配置
 sniffer:
@@ -194,13 +227,6 @@ rules:
   - RULE-SET,apple_ip,直连
 
   # 3.【自定义拦截/代理】用户手动指定的规则
-  - DOMAIN-SUFFIX,steamcommunity.com,🚀 默认代理
-  - DOMAIN,store.steampowered.com,🚀 默认代理
-  - DOMAIN,api.steampowered.com,🚀 默认代理
-  - DOMAIN,login.steampowered.com,🚀 默认代理
-  - DOMAIN,steam-chat.com,🚀 默认代理
-  - DOMAIN,help.steampowered.com,🚀 默认代理
-  - DOMAIN-SUFFIX,steamstatic.com,🚀 默认代理
   - DOMAIN-SUFFIX,google.com,🚀 默认代理
   - RULE-SET,custom_proxy,🚀 默认代理
   - RULE-SET,custom_direct,直连

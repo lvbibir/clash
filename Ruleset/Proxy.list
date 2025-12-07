@@ -37,6 +37,7 @@ DOMAIN,steam-chat.com
 DOMAIN,login.steampowered.com
 DOMAIN,help.steampowered.com
 DOMAIN-SUFFIX,steamcommunity.com
+DOMAIN-SUFFIX,steamstatic.com
 
 # 资源站
 DOMAIN-SUFFIX,unpkg.com
