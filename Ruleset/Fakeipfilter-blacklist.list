@@ -14,6 +14,9 @@
 +.ipv6check-http.steamserver.net
 +.ipv6check-udp.steamserver.net
 
+# infinity
+basic-static-server.infinitynewtab.com
+
 # 放行NTP服务
 time.*.com
 time.*.gov
