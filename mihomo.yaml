@@ -14,6 +14,11 @@ profile:
   store-selected: true
   store-fake-ip: true
 
+lan-allowed-ips:
+  - 0.0.0.0/0
+  - ::/0
+  - 127.0.0.1/8
+
 geodata-mode: true 
 geodata-loader: memconservative
 geo-update-interval: 24
@@ -23,7 +28,7 @@ geox-url:
 proxy-providers:
   # === 主订阅 ===
   01_Main:
-    url: "---"
+    url: "https://dc96c7ea7d7c187fa2d353dd5c456dd8.img-cache-oss-cn-tokyo-aliyuncs-storage.com/s?t=dc96c7ea7d7c187fa2d353dd5c456dd8.jpg"
     type: http
     interval: 86400
     health-check:
@@ -37,7 +42,7 @@ proxy-providers:
 
   # === 备订阅 ===
   02_Backup:
-    url: "---"
+    url: "https://9dad37a142a23ef7206bebb783b2838e.img-cache-oss-cn-tokyo-aliyuncs-storage.com/s?t=9dad37a142a23ef7206bebb783b2838e.jpg"
     type: http
     interval: 86400
     health-check:
@@ -73,6 +78,7 @@ dns:
   fake-ip-range: 198.18.0.1/16
   fake-ip-filter-mode: blacklist
   fake-ip-filter:
+    - basic-static-server.infinitynewtab.com
     - rule-set:fakeipfilter_blacklist
     - rule-set:private_domain
     - rule-set:cn_domain
@@ -99,9 +105,9 @@ dns:
   
   # 「直连」域名的解析
   direct-nameserver:
-    - quic://dns.alidns.com:853        # 阿里 DoQ
     - https://doh.pub/dns-query        # 腾讯 DNSPod DoH
     - https://dns.alidns.com/dns-query # 阿里 DoH
+    - quic://dns.alidns.com:853        # 阿里 DoQ
   
   # 用来解析没有匹配到任何「域名规则」的域名，通常是国外域名，建议使用国外 DoH 防止污染。
   # 但这个解析结果并不会用来发起连接，所以为了追求速度不使用 DoH 或直接使用国内 DNS 也行。
@@ -109,13 +115,13 @@ dns:
   # 但境外 DoH/DoT/DoQ 依旧不可直连，因此不适合作为主要 nameserver
   # 所以保持国内 DoQ/DoH 作为主解析最可靠
   nameserver:
-    - quic://dns.alidns.com:853        # 阿里 DoQ
     - https://doh.pub/dns-query        # 腾讯 DNSPod DoH
     - https://dns.alidns.com/dns-query # 阿里 DoH
+    - quic://dns.alidns.com:853        # 阿里 DoQ
 
 # 嗅探配置
 sniffer:
-  enable: true
+  enable: false
   parse-pure-ip: true  # 处理纯 IP 请求
   sniff:
     HTTP:
