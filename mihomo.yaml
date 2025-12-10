@@ -19,6 +19,12 @@ lan-allowed-ips:
   - ::/0
   - 127.0.0.1/8
 
+secret: 123456
+external-controller: 127.0.0.1:9090
+external-ui: ui
+external-ui-name: zashboard
+external-ui-url: https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip
+
 # geodata-mode: true 
 # geodata-loader: memconservative
 # geo-update-interval: 24
@@ -111,6 +117,21 @@ sniffer:
   skip-domain:
     - "Mijia Cloud"
     - "+.push.apple.com"
+  skip-src-address:
+    - 192.168.1.1/24
+  skip-dst-address:
+    - 91.105.192.0/23
+    - 91.108.4.0/22
+    - 91.108.8.0/21
+    - 91.108.16.0/21
+    - 91.108.56.0/22
+    - 95.161.64.0/20
+    - 149.154.160.0/20
+    - 185.76.151.0/24
+    - 2001:67c:4e8::/48
+    - 2001:b28:f23c::/47
+    - 2001:b28:f23f::/48
+    - 2a0a:f280:203::/48
 
 proxies:
   - {name: 直连, type: direct}
@@ -211,10 +232,10 @@ rules:
   # 放在前面是为了减轻性能负担，测速和苹果更新没必要去跑后面的规则
   - RULE-SET,speedtest_domain,直连
   - RULE-SET,apple_domain,直连  # Apple 服务包含 AppStore 下载，建议直连
-  - RULE-SET,apple_ip,直连
+  - RULE-SET,apple_ip,直连,no-resolve
 
   # 【自定义拦截/代理】用户手动指定的规则
-  - DOMAIN-SUFFIX,google.com,🚀 默认代理
+  - DOMAIN-SUFFIX,github.com,🚀 默认代理
   - RULE-SET,custom_proxy,🚀 默认代理
   - RULE-SET,custom_direct,直连
 
@@ -227,7 +248,7 @@ rules:
   - RULE-SET,telegram_domain,✈️ Telegram
   - RULE-SET,sony_domain,🎧 Sony
   - RULE-SET,microsoft_domain,Ⓜ️ Microsoft
-  - RULE-SET,telegram_ip,✈️ Telegram
+  - RULE-SET,telegram_ip,✈️ Telegram,no-resolve
   
   # 【通用大厂代理】
   - RULE-SET,youtube_domain,📹 YouTube
