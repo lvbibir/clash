@@ -1,7 +1,8 @@
 # 配置文件写法参考 mihomo wiki: https://wiki.metacubex.one/
 
 allow-lan: true
-bind-address: "*"
+bind-address: "0.0.0.0"
+mixed-port: 7890
 ipv6: false
 unified-delay: true
 tcp-concurrent: true
