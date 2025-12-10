@@ -7,8 +7,8 @@
 
 # ====================== 请在这里修改你的实际路径 ======================
 $CorePath   = "D:\software\1-portable\mihomo"
-$ExeName    = "mihomo.exe"
-$ConfigFile = "config.yaml"
+$ExeName    = "mihomo-windows-amd64.exe"
+$ConfigFile = "mihomo.yaml"
 $Secret     = "123456"                          # 如果没设置 secret 留空即可
 # =====================================================================
 

@@ -1,20 +1,20 @@
 # 配置文件写法参考 mihomo wiki: https://wiki.metacubex.one/
 
 allow-lan: true
+mode: rule
 bind-address: "0.0.0.0"
 mixed-port: 7890
 ipv6: false
 unified-delay: true
-tcp-concurrent: true
 log-level: warning
 find-process-mode: strict
 global-client-fingerprint: chrome
+tcp-concurrent: true
 keep-alive-idle: 600
 keep-alive-interval: 15
 profile:
   store-selected: true
   store-fake-ip: true
-
 lan-allowed-ips:
   - 0.0.0.0/0
   - ::/0
@@ -41,6 +41,7 @@ proxy-providers:
   150G_Mouth:
     <<: *NodeParam        # 引用锚点
     url: "---"
+    path: './proxy-providers/providers-1.yaml'
     # override:
     #   additional-prefix: "0.主 "
 
@@ -48,6 +49,7 @@ proxy-providers:
   # 500G_LongTerm:
   #   <<: *NodeParam
   #   url: "---"
+  #   path: './proxy-providers/providers-2.yaml'
   #   override:
   #     additional-prefix: "1.备 "
 
@@ -275,36 +277,114 @@ RuleSet_domain_mrs: &RuleSet_domain_mrs {type: http, behavior: domain, interval:
 RuleSet_domain_text: &RuleSet_domain_text {type: http, behavior: domain, interval: 43200, format: text}
 RuleSet_ipcidr_mrs: &RuleSet_ipcidr_mrs {type: http, behavior: ipcidr, interval: 43200, format: mrs}
 
-# 规则集 (保持不变)
-rule-providers: 
+# 规则集
+rule-providers:
   # 域名规则
   # 自定义规则
-  custom_proxy: { <<: *RuleSet_classical_text, url: "https://raw.githubusercontent.com/lvbibir/clash/refs/heads/master/Ruleset/Proxy.list"}
-  custom_direct: { <<: *RuleSet_classical_text, url: "https://raw.githubusercontent.com/lvbibir/clash/refs/heads/master/Ruleset/Direct.list"}
-  fakeipfilter_blacklist: { <<: *RuleSet_domain_text, url: "https://raw.githubusercontent.com/lvbibir/clash/refs/heads/master/Ruleset/Fakeipfilter-blacklist.list"}
+  custom_proxy:
+    <<: *RuleSet_classical_text
+    url: "https://raw.githubusercontent.com/lvbibir/clash/refs/heads/master/Ruleset/Proxy.list"
+    path: ./rule-providers/custom_proxy.list
+  custom_direct:
+    <<: *RuleSet_classical_text
+    url: "https://raw.githubusercontent.com/lvbibir/clash/refs/heads/master/Ruleset/Direct.list"
+    path: ./rule-providers/custom_direct.list
+  fakeipfilter_blacklist:
+    <<: *RuleSet_domain_text
+    url: "https://raw.githubusercontent.com/lvbibir/clash/refs/heads/master/Ruleset/Fakeipfilter-blacklist.list"
+    path: ./rule-providers/fakeipfilter_blacklist.list
 
-  private_domain: { <<: *RuleSet_domain_mrs, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs"}
-  ai_domain: { <<: *RuleSet_domain_mrs, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs" }
-  x_domain: { <<: *RuleSet_domain_mrs, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/x.mrs"}
-  youtube_domain: { <<: *RuleSet_domain_mrs, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/youtube.mrs"}
-  google_domain: { <<: *RuleSet_domain_mrs, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/google.mrs"}
-  github_domain: { <<: *RuleSet_domain_mrs, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/github.mrs"}
-  steam_domain: { <<: *RuleSet_domain_mrs, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/steam.mrs"}
-  sony_domain: { <<: *RuleSet_domain_mrs, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/sony.mrs"}
-  telegram_domain: { <<: *RuleSet_domain_mrs, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/telegram.mrs"}
-  onedrive_domain: { <<: *RuleSet_domain_mrs, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/onedrive.mrs"}
-  microsoft_domain: { <<: *RuleSet_domain_mrs, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/microsoft.mrs"}
-  apple_domain: { <<: *RuleSet_domain_mrs, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/apple.mrs"}
-  speedtest_domain: { <<: *RuleSet_domain_mrs, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/ookla-speedtest.mrs"}
-  geolocation-cn_domain: { <<: *RuleSet_domain_mrs, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-cn.mrs"}
-  geolocation-!cn_domain: { <<: *RuleSet_domain_mrs, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.mrs"}
-  cn_domain: { <<: *RuleSet_domain_mrs, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs"}
-  tld-cn_domain: { <<: *RuleSet_domain_mrs, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tld-cn.mrs"}
-  connectivity-check_domain: { <<: *RuleSet_domain_mrs, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/connectivity-check.mrs"}
-  
+  private_domain:
+    <<: *RuleSet_domain_mrs
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs"
+    path: ./rule-providers/private_domain.mrs
+  ai_domain:
+    <<: *RuleSet_domain_mrs
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs"
+    path: ./rule-providers/ai_domain.mrs
+  x_domain:
+    <<: *RuleSet_domain_mrs
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/x.mrs"
+    path: ./rule-providers/x_domain.mrs
+  youtube_domain:
+    <<: *RuleSet_domain_mrs
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/youtube.mrs"
+    path: ./rule-providers/youtube_domain.mrs
+  google_domain:
+    <<: *RuleSet_domain_mrs
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/google.mrs"
+    path: ./rule-providers/google_domain.mrs
+  github_domain:
+    <<: *RuleSet_domain_mrs
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/github.mrs"
+    path: ./rule-providers/github_domain.mrs 
+  steam_domain:
+    <<: *RuleSet_domain_mrs
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/steam.mrs"
+    path: ./rule-providers/steam_domain.mrs
+  sony_domain:
+    <<: *RuleSet_domain_mrs
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/sony.mrs"
+    path: ./rule-providers/sony_domain.mrs
+  telegram_domain:
+    <<: *RuleSet_domain_mrs
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/telegram.mrs"
+    path: ./rule-providers/telegram_domain.mrs
+  onedrive_domain:
+    <<: *RuleSet_domain_mrs
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/onedrive.mrs"
+    path: ./rule-providers/onedrive_domain.mrs
+  microsoft_domain:
+    <<: *RuleSet_domain_mrs
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/microsoft.mrs"
+    path: ./rule-providers/microsoft_domain.mrs
+  apple_domain:
+    <<: *RuleSet_domain_mrs
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/apple.mrs"
+    path: ./rule-providers/apple_domain.mrs
+  speedtest_domain:
+    <<: *RuleSet_domain_mrs
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/ookla-speedtest.mrs"
+    path: ./rule-providers/speedtest_domain.mrs
+  geolocation-cn_domain:
+    <<: *RuleSet_domain_mrs
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-cn.mrs"
+    path: ./rule-providers/geolocation-cn_domain.mrs
+  geolocation-!cn_domain:
+    <<: *RuleSet_domain_mrs
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.mrs"
+    path: ./rule-providers/geolocation-!cn_domain.mrs
+  cn_domain:
+    <<: *RuleSet_domain_mrs
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs"
+    path: ./rule-providers/cn_domain.mrs
+  tld-cn_domain:
+    <<: *RuleSet_domain_mrs
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tld-cn.mrs"
+    path: ./rule-providers/tld-cn_domain.mrs
+  connectivity-check_domain:
+    <<: *RuleSet_domain_mrs
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/connectivity-check.mrs"
+    path: ./rule-providers/connectivity-check_domain.mrs
+
   # IP 规则
-  private_ip: {<<: *RuleSet_ipcidr_mrs, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs"}
-  cn_ip: { <<: *RuleSet_ipcidr_mrs, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs"}
-  google_ip: { <<: *RuleSet_ipcidr_mrs, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/google.mrs"}
-  telegram_ip: { <<: *RuleSet_ipcidr_mrs, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/telegram.mrs"}
-  apple_ip: {<<: *RuleSet_ipcidr_mrs, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo-lite/geoip/apple.mrs"}
+  private_ip:
+    <<: *RuleSet_ipcidr_mrs
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs"
+    path: ./rule-providers/private_ip.mrs
+  cn_ip:
+    <<: *RuleSet_ipcidr_mrs
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs"
+    path: ./rule-providers/cn_ip.mrs
+  google_ip:
+    <<: *RuleSet_ipcidr_mrs
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/google.mrs"
+    path: ./rule-providers/google_ip.mrs
+  telegram_ip:
+    <<: *RuleSet_ipcidr_mrs
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/telegram.mrs"
+    path: ./rule-providers/telegram_ip.mrs
+  apple_ip:
+    <<: *RuleSet_ipcidr_mrs
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo-lite/geoip/apple.mrs"
+    path: ./rule-providers/apple_ip.mrs
