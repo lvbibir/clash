@@ -40,7 +40,7 @@ proxy-providers:
   # === 主订阅 ===
   150G_Mouth:
     <<: *NodeParam        # 引用锚点
-    url: "---"
+    url: '---'
     path: './proxy-providers/providers-1.yaml'
     # override:
     #   additional-prefix: "0.主 "
@@ -48,7 +48,7 @@ proxy-providers:
   # === 备订阅 ===
   # 500G_LongTerm:
   #   <<: *NodeParam
-  #   url: "---"
+  #   url: '---'
   #   path: './proxy-providers/providers-2.yaml'
   #   override:
   #     additional-prefix: "1.备 "
@@ -131,6 +131,7 @@ sniffer:
     - 95.161.64.0/20
     - 149.154.160.0/20
     - 185.76.151.0/24
+    - 169.254.169.254/32
     - 2001:67c:4e8::/48
     - 2001:b28:f23c::/47
     - 2001:b28:f23f::/48
@@ -159,7 +160,7 @@ FallBack: &FallBack {type: fallback, url: 'https://cp.cloudflare.com/generate_20
 # LoadBalance: &LoadBalance {type: load-balance, url: 'https://cp.cloudflare.com/generate_204', disable-udp: false, hidden: true, include-all: true, interval: 300, lazy: true, strategy: consistent-hashing, timeout: 2000, max-failed-times: 3}
 
 # 稳定 IP 锚点
-pg_FallBack: &pg_FallBack [
+pg_FallBack_US: &pg_FallBack_US [
   🔯 美国故转, 🔯 日本故转, 🔯 狮城故转, 🔯 台湾故转, 🔯 香港故转
 ]
 
@@ -188,15 +189,15 @@ proxy-groups:
 
   # --- 功能策略组 ---
   - {name: 🚀 默认代理, type: select, proxies: *pg_Proxy}
-  - {name: 🤖 AI, type: select, proxies: *pg_FallBack}
+  - {name: 🤖 AI, type: select, proxies: *pg_FallBack_US}
   - {name: 🎮 Steam, type: select, proxies: *pg_Direct}
   - {name: 🐬 OneDrive, type: select, proxies: *pg_Direct}
-  - {name: Ⓜ️ Microsoft, type: select, proxies: *pg_Proxy}
+  - {name: Ⓜ️ Microsoft, type: select, proxies: *pg_Direct}
   - {name: 👨🏿‍💻 GitHub, type: select, proxies: *pg_Proxy}
   - {name: ✖️ X, type: select, proxies: *pg_Proxy}
   - {name: 🎧 Sony, type: select, proxies: *pg_Proxy}
   - {name: ✈️ Telegram, type: select, proxies: *pg_Proxy}
-  - {name: 🍀 Google, type: select, proxies: *pg_FallBack}
+  - {name: 🍀 Google, type: select, proxies: *pg_FallBack_US}
   - {name: 📹 YouTube, type: select, proxies: *pg_Proxy}
   - {name: 🐟 漏网之鱼, type: select, proxies: *pg_Proxy}
 
@@ -228,6 +229,7 @@ rules:
   # 【最高优先级】局域网与私有地址 (防止回环和内网泄露)
   # 必须放在第一位，且 private_ip 建议加上 no-resolve 避免不必要的 DNS 解析
   - IP-CIDR6,::/0,REJECT,no-resolve
+  - IP-CIDR,169.254.169.254/32,REJECT,no-resolve
   - RULE-SET,private_ip,直连,no-resolve
   - RULE-SET,private_domain,直连
   
