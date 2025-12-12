@@ -30,8 +30,8 @@ external-ui-url: https://github.com/Zephyruso/zashboard/releases/latest/download
 # geodata-loader: memconservative
 # geo-update-interval: 24
 # geox-url:
-  # geosite: https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat
-  # geoip: https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip-lite.dat
+#   geosite: https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat
+#   geoip: https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip-lite.dat
 
 # 订阅基础配置 [每天更新一次订阅节点，每 300 秒一次健康检查]
 NodeParam: &NodeParam {type: http, interval: 86400, health-check: {enable: true, url: 'https://cp.cloudflare.com/generate_204', interval: 300}}
@@ -42,8 +42,6 @@ proxy-providers:
     <<: *NodeParam        # 引用锚点
     url: '---'
     path: './proxy-providers/providers-1.yaml'
-    # override:
-    #   additional-prefix: "0.主 "
 
   # === 备订阅 ===
   # 500G_LongTerm:
@@ -82,22 +80,18 @@ dns:
     - rule-set:connectivity-check_domain
     - rule-set:tld-cn_domain
     - rule-set:geolocation-cn_domain
-
   # 用于解析「DNS 服务器自身域名」，以及 Mihomo 启动初期的基础解析。
   default-nameserver:
     - 223.5.5.5                         # 阿里 UDP
     - 119.29.29.29                      # 腾讯 Pod 备用
-
   # 解析「代理服务器域名」，防止 nameserver 无法访问导致连不上代理
   proxy-server-nameserver:
     - 223.5.5.5                         # 阿里 UDP
     - 119.29.29.29                      # 腾讯 Pod 备用
-  
   # 「直连」域名的解析
   direct-nameserver:
     - https://dns.alidns.com/dns-query # 阿里 DoH
     - https://doh.pub/dns-query        # 腾讯 DNSPod DoH
-  
   # 用来解析没有匹配到任何「域名规则」的域名，通常是国外域名，建议使用国外 DoH 防止污染。
   # 但这个解析结果并不会用来发起连接，所以为了追求速度不使用 DoH 或直接使用国内 DNS 也行。
   # 所以保持国内 DoQ/DoH 作为主解析最可靠
@@ -163,7 +157,6 @@ FallBack: &FallBack {type: fallback, url: 'https://cp.cloudflare.com/generate_20
 pg_FallBack_US: &pg_FallBack_US [
   🔯 美国故转, 🔯 日本故转, 🔯 狮城故转, 🔯 台湾故转, 🔯 香港故转
 ]
-
 # 所有节点锚点, 优先自动选择
 pg_Proxy: &pg_Proxy [
   ♻️ 自动选择, 🌐 全部节点,
@@ -172,7 +165,6 @@ pg_Proxy: &pg_Proxy [
   🇺🇸 美国节点, 🇯🇵 日本节点, 🇸🇬 狮城节点, 🇹🇼 台湾节点, 🇭🇰 香港节点, 
   直连
 ]
-
 # 所有节点锚点, 优先直连
 pg_Direct: &pg_Direct [
   直连, ♻️ 自动选择, 🌐 全部节点, 
@@ -182,11 +174,9 @@ pg_Direct: &pg_Direct [
 ]
 
 proxy-groups:
-
   # --- 默认节点 ---
   - {name: ♻️ 自动选择, <<: *UrlTest, filter: *FilterAll}
   - {name: 🌐 全部节点, <<: *Select, filter: *FilterAll}
-
   # --- 功能策略组 ---
   - {name: 🚀 默认代理, type: select, proxies: *pg_Proxy}
   - {name: 🤖 AI, type: select, proxies: *pg_FallBack_US}
@@ -200,21 +190,18 @@ proxy-groups:
   - {name: 🍀 Google, type: select, proxies: *pg_FallBack_US}
   - {name: 📹 YouTube, type: select, proxies: *pg_Proxy}
   - {name: 🐟 漏网之鱼, type: select, proxies: *pg_Proxy}
-
   # --- 地区节点选择 (Select - 手动选择) ---
   - {name: 🇺🇸 美国节点, <<: *Select, filter: *FilterUS}
   - {name: 🇯🇵 日本节点, <<: *Select, filter: *FilterJP}
   - {name: 🇸🇬 狮城节点, <<: *Select, filter: *FilterSG}
   - {name: 🇹🇼 台湾节点, <<: *Select, filter: *FilterTW}
   - {name: 🇭🇰 香港节点, <<: *Select, filter: *FilterHK}
-
   # --- 故障转移 (Fallback - 自动高可用) ---
   - {name: 🔯 美国故转, <<: *FallBack, filter: *FilterUS}
   - {name: 🔯 日本故转, <<: *FallBack, filter: *FilterJP}
   - {name: 🔯 狮城故转, <<: *FallBack, filter: *FilterSG}
   - {name: 🔯 台湾故转, <<: *FallBack, filter: *FilterTW}
   - {name: 🔯 香港故转, <<: *FallBack, filter: *FilterHK}
-
   # --- 自动测速 (Url-Test - 选最快) ---
   - {name: ♻️ 美国自动, <<: *UrlTest, filter: *FilterUS}
   - {name: ♻️ 日本自动, <<: *UrlTest, filter: *FilterJP}
@@ -223,27 +210,22 @@ proxy-groups:
   - {name: ♻️ 香港自动, <<: *UrlTest, filter: *FilterHK}
 
 rules:
-
   # 大原则: ip 规则放到域名规则前面, 避免 DNS 污染导致的误判
-
   # 【最高优先级】局域网与私有地址 (防止回环和内网泄露)
   # 必须放在第一位，且 private_ip 建议加上 no-resolve 避免不必要的 DNS 解析
   - IP-CIDR6,::/0,REJECT,no-resolve
   - IP-CIDR,169.254.169.254/32,REJECT,no-resolve
   - RULE-SET,private_ip,直连,no-resolve
   - RULE-SET,private_domain,直连
-  
   # 【特定直连】高频、大流量且必须直连的服务
   # 放在前面是为了减轻性能负担，测速和苹果更新没必要去跑后面的规则
   - RULE-SET,speedtest_domain,直连
   - RULE-SET,apple_domain,直连  # Apple 服务包含 AppStore 下载，建议直连
   - RULE-SET,apple_ip,直连,no-resolve
-
   # 【自定义拦截/代理】用户手动指定的规则
   - DOMAIN-SUFFIX,github.com,🚀 默认代理
   - RULE-SET,custom_proxy,🚀 默认代理
   - RULE-SET,custom_direct,直连
-
   # 【特定应用代理】需要分流的特定 APP, 按照使用频率从高到低排序
   - RULE-SET,ai_domain,🤖 AI
   - RULE-SET,onedrive_domain,🐬 OneDrive
@@ -253,23 +235,18 @@ rules:
   - RULE-SET,telegram_domain,✈️ Telegram
   - RULE-SET,sony_domain,🎧 Sony
   - RULE-SET,microsoft_domain,Ⓜ️ Microsoft
-  - RULE-SET,telegram_ip,✈️ Telegram,no-resolve
-  
   # 【通用大厂代理】
   - RULE-SET,youtube_domain,📹 YouTube
   - RULE-SET,google_domain,🍀 Google
   - RULE-SET,google_ip,🍀 Google
-
   # 【国内规则】(性能优化关键点)
   # 逻辑：如果是国内域名->直接走，不用去匹配后面庞大的“非国内”列表。
   - RULE-SET,cn_domain,直连
   - RULE-SET,cn_ip,直连
-
   # 【兜底规则】
   # 如果上面都没匹配中，判断是不是“非中国IP/域名”。如果是，走默认代理。
   - RULE-SET,geolocation-!cn_domain,🚀 默认代理
-  
-  # 8.【最终漏网之鱼】
+  # 【最终漏网之鱼】
   # 既不是国内，也不在已知非国内列表里，全走代理（白名单模式，防墙）
   - MATCH,🐟 漏网之鱼
 
@@ -295,7 +272,7 @@ rule-providers:
     <<: *RuleSet_domain_text
     url: "https://raw.githubusercontent.com/lvbibir/clash/refs/heads/master/Ruleset/Fakeipfilter-blacklist.list"
     path: ./rule-providers/fakeipfilter_blacklist.list
-
+  # 通用域名规则
   private_domain:
     <<: *RuleSet_domain_mrs
     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs"
@@ -368,8 +345,7 @@ rule-providers:
     <<: *RuleSet_domain_mrs
     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/connectivity-check.mrs"
     path: ./rule-providers/connectivity-check_domain.mrs
-
-  # IP 规则
+  # 通用IP 规则
   private_ip:
     <<: *RuleSet_ipcidr_mrs
     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs"
@@ -382,10 +358,6 @@ rule-providers:
     <<: *RuleSet_ipcidr_mrs
     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/google.mrs"
     path: ./rule-providers/google_ip.mrs
-  telegram_ip:
-    <<: *RuleSet_ipcidr_mrs
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/telegram.mrs"
-    path: ./rule-providers/telegram_ip.mrs
   apple_ip:
     <<: *RuleSet_ipcidr_mrs
     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo-lite/geoip/apple.mrs"

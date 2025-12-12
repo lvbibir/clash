@@ -112,9 +112,10 @@ if ($args.Count -gt 0) {
         Write-Host "  [3] 重启 Mihomo"
         Write-Host "  [4] 查看状态"
         Write-Host "  [5] 重载配置"
-        Write-Host "  [0] 退出"
         Write-Host ""
-        $choice = Read-Host "请选择操作 (0-5)"
+        Write-Host "  (按其他任意键退出)" -ForegroundColor Gray
+        Write-Host ""
+        $choice = Read-Host "请选择操作 (1-5)"
 
         switch ($choice) {
             "1" { Start-Mihomo;  Read-Host "`n按回车键继续..." }
@@ -122,8 +123,7 @@ if ($args.Count -gt 0) {
             "3" { Restart-Mihomo; Read-Host "`n按回车键继续..." }
             "4" { Status-Mihomo; Read-Host "`n按回车键继续..." }
             "5" { Reload-Mihomo; Read-Host "`n按回车键继续..." }
-            "0" { Write-Host "再见！" -ForegroundColor Cyan; exit }
-            default { Write-Host "输入无效，请重新选择" -ForegroundColor Red; Start-Sleep -Seconds 2 }
+            default { Write-Host "再见！" -ForegroundColor Cyan; exit }
         }
     }
 }
