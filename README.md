@@ -1,10 +1,17 @@
-本仓库包含:
+项目结构目录:
 
-- 自用 clash 分流规则, `Rulset/*`
-- mihomo 内核配置文件, `mihomo.yaml`
-- mihomo 裸核启停脚本, `mihomo-manager.ps1`
-- zashboard 配置, `zashboard-settings.json`
-- ini 格式的 clash 配置文件, `lvbibir.ini` (⚠️已弃用, 不再更新)
+```
+.
+├── LICENSE
+├── README.md
+├── lvbibir.ini                 # ini 格式的 clash 配置文件 (⚠️已弃用, 不再更新)
+├── mihomo-manager.ps1          # mihomo 裸核启停脚本
+├── mihomo.yaml                 # mihomo 内核配置文件
+└── Ruleset/                    # 自用 clash 分流规则
+    ├── Direct.list             # 直连规则列表
+    ├── Fakeipfilter.list       # Fake IP 过滤黑名单
+    └── Proxy.list              # 代理规则列表
+```
 
 本仓库配置参考了以下链接内容, 以及 [sparkle](https://github.com/xishang0128/sparkle) [FlClash](https://github.com/chen08209/FlClash) TG 群组各位大佬:
 

@@ -75,7 +75,7 @@ dns:
   fake-ip-range: 198.18.0.1/16
   fake-ip-filter-mode: blacklist
   fake-ip-filter:
-    - rule-set:fakeipfilter_blacklist
+    - rule-set:fakeipfilter
     - rule-set:private_domain
     - rule-set:connectivity-check_domain
     - rule-set:tld-cn_domain
@@ -268,10 +268,10 @@ rule-providers:
     <<: *RuleSet_classical_text
     url: "https://raw.githubusercontent.com/lvbibir/clash/refs/heads/master/Ruleset/Direct.list"
     path: ./rule-providers/custom_direct.list
-  fakeipfilter_blacklist:
+  fakeipfilter:
     <<: *RuleSet_domain_text
-    url: "https://raw.githubusercontent.com/lvbibir/clash/refs/heads/master/Ruleset/Fakeipfilter-blacklist.list"
-    path: ./rule-providers/fakeipfilter_blacklist.list
+    url: "https://raw.githubusercontent.com/lvbibir/clash/refs/heads/master/Ruleset/Fakeipfilter.list"
+    path: ./rule-providers/fakeipfilter.list
   # 通用域名规则
   private_domain:
     <<: *RuleSet_domain_mrs
