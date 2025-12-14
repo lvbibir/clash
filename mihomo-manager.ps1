@@ -39,7 +39,6 @@ $CorePath = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyIn
 
 $ExeName    = "mihomo-windows-amd64.exe"
 $ConfigFile = "mihomo.yaml"
-$LogFile    = "mihomo-manager.log"
 $ApiPort    = 9090
 
 # Secret 配置：优先从环境变量读取，否则使用默认值
@@ -48,25 +47,11 @@ $Secret = if ($env:MIHOMO_SECRET) { $env:MIHOMO_SECRET } else { "123456" }
 
 $FullExe     = Join-Path $CorePath $ExeName
 $FullConfig  = Join-Path $CorePath $ConfigFile
-$FullLog     = Join-Path $CorePath $LogFile
 $ProcessName = [IO.Path]::GetFileNameWithoutExtension($ExeName)
 $ApiUrl      = "http://127.0.0.1:$ApiPort"
 $Headers     = if ($Secret) { @{ Authorization = "Bearer $Secret" } } else { @{} }
 
 # ====================== 工具函数 ======================
-
-# 写入日志
-function Write-Log {
-    param(
-        [Parameter(Mandatory)]
-        [string]$Message,
-        [ValidateSet("INFO", "WARN", "ERROR")]
-        [string]$Level = "INFO"
-    )
-    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    $logEntry = "$timestamp [$Level] $Message"
-    Add-Content -Path $FullLog -Value $logEntry -ErrorAction SilentlyContinue
-}
 
 # 等待条件满足
 function Wait-ForCondition {
@@ -159,7 +144,6 @@ Mihomo Manager - 使用说明
   MIHOMO_SECRET  设置 API 密钥 (可选)
 
 配置文件位置: $FullConfig
-日志文件位置: $FullLog
 
 "@ -ForegroundColor Cyan
 }
@@ -170,19 +154,16 @@ function Start-Mihomo {
     $proc = Get-MihomoProcess
     if ($proc) {
         Write-Host "Mihomo 已经在运行 (PID $($proc.Id))" -ForegroundColor Yellow
-        Write-Log "启动请求被忽略: 进程已运行 (PID $($proc.Id))" "WARN"
         return
     }
     
     # 验证配置
     Write-Host "正在验证配置文件..." -ForegroundColor Cyan
     if (-not (Test-Config)) {
-        Write-Log "启动失败: 配置验证未通过" "ERROR"
         return
     }
     
     Write-Host "正在启动 Mihomo 裸核..." -ForegroundColor Cyan
-    Write-Log "正在启动 Mihomo..."
     
     Push-Location $CorePath
     try {
@@ -198,7 +179,6 @@ function Start-Mihomo {
     if ($started) {
         $proc = Get-MihomoProcess
         Write-Host "启动成功！PID: $($proc.Id)" -ForegroundColor Green
-        Write-Log "启动成功 (PID $($proc.Id))"
         
         # 等待 API 就绪
         Write-Host "等待 API 就绪..." -ForegroundColor Cyan
@@ -206,16 +186,13 @@ function Start-Mihomo {
         
         if ($apiReady) {
             Write-Host "API 已就绪 → $ApiUrl" -ForegroundColor Green
-            Write-Log "API 已就绪"
         }
         else {
             Write-Host "API 未能在预期时间内就绪，请检查配置" -ForegroundColor Yellow
-            Write-Log "API 就绪超时" "WARN"
         }
     }
     else {
         Write-Host "启动失败！请检查路径和配置文件" -ForegroundColor Red
-        Write-Log "启动失败: 进程未能启动" "ERROR"
     }
 }
 
@@ -223,12 +200,10 @@ function Stop-Mihomo {
     $proc = Get-MihomoProcess
     if (-not $proc) {
         Write-Host "Mihomo 当前未运行" -ForegroundColor Yellow
-        Write-Log "停止请求被忽略: 进程未运行" "WARN"
         return
     }
     
     Write-Host "正在停止 Mihomo (PID $($proc.Id))..." -ForegroundColor Cyan
-    Write-Log "正在停止 Mihomo (PID $($proc.Id))..."
     
     try {
         Stop-Process -Id $proc.Id -Force -ErrorAction Stop
@@ -238,22 +213,18 @@ function Stop-Mihomo {
         
         if ($stopped) {
             Write-Host "已停止" -ForegroundColor Green
-            Write-Log "已停止"
         }
         else {
             Write-Host "进程可能未完全退出" -ForegroundColor Yellow
-            Write-Log "停止超时" "WARN"
         }
     }
     catch {
         Write-Host "停止失败: $($_.Exception.Message)" -ForegroundColor Red
-        Write-Log "停止失败: $($_.Exception.Message)" "ERROR"
     }
 }
 
 function Restart-Mihomo {
     Write-Host "正在重启 Mihomo..." -ForegroundColor Cyan
-    Write-Log "正在重启 Mihomo..."
     
     Stop-Mihomo
     Start-Sleep -Seconds 2
@@ -290,22 +261,18 @@ function Get-MihomoStatus {
 function Invoke-ConfigReload {
     if (-not (Test-Api)) {
         Write-Host "API 不可达，请先启动核心" -ForegroundColor Red
-        Write-Log "重载失败: API 不可达" "ERROR"
         return
     }
     
     Write-Host "正在重载配置文件..." -ForegroundColor Cyan
-    Write-Log "正在重载配置文件..."
     
     try {
         $body = @{} | ConvertTo-Json -Compress
         Invoke-RestMethod "$ApiUrl/configs?force=true" -Method Put -Headers $Headers -Body $body -ContentType "application/json" -TimeoutSec 10 | Out-Null
         Write-Host "配置重载成功！" -ForegroundColor Green
-        Write-Log "配置重载成功"
     }
     catch {
         Write-Host "重载失败: $($_.Exception.Message)" -ForegroundColor Red
-        Write-Log "重载失败: $($_.Exception.Message)" "ERROR"
     }
 }
 
