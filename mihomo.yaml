@@ -34,7 +34,7 @@ external-ui-url: https://github.com/Zephyruso/zashboard/releases/latest/download
 #   geoip: https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip-lite.dat
 
 # 订阅基础配置 [每天更新一次订阅节点，每 300 秒一次健康检查]
-NodeParam: &NodeParam {type: http, interval: 86400, health-check: {enable: true, url: 'https://cp.cloudflare.com/generate_204', interval: 300}}
+NodeParam: &NodeParam {type: http, interval: 86400, health-check: {enable: true, url: 'https://www.gstatic.com/generate_204', interval: 300}}
 
 proxy-providers:
   # === 主订阅 ===
@@ -148,10 +148,10 @@ FilterAll: &FilterAll '^(?!.*?(?i)(GB\s*[\|丨]\s*GB|GB|Traffic|Reset|Days|Left|
 # 自动选择 [每 300 秒一次惰性健康检查，容差 50ms，时延超过 2 秒判定为失败，失败 3 次自动触发健康检查]
 # 自动回退 [每 300 秒一次惰性健康检查，时延超过 2 秒判定为失败，失败 3 次自动触发健康检查]
 # 负载均衡 [每 300 秒一次惰性健康检查，时延超过 2 秒判定为失败，失败 3 次自动触发健康检查]
-Select: &Select {type: select, url: 'https://cp.cloudflare.com/generate_204', disable-udp: false, hidden: false, include-all: true}
-UrlTest: &UrlTest {type: url-test, url: 'https://cp.cloudflare.com/generate_204', disable-udp: false, hidden: true, include-all: true, interval: 300, lazy: true, tolerance: 50, timeout: 2000, max-failed-times: 3}
-FallBack: &FallBack {type: fallback, url: 'https://cp.cloudflare.com/generate_204',disable-udp: false, hidden: true, include-all: true, interval: 300, lazy: true, timeout: 2000,  max-failed-times: 3}
-# LoadBalance: &LoadBalance {type: load-balance, url: 'https://cp.cloudflare.com/generate_204', disable-udp: false, hidden: true, include-all: true, interval: 300, lazy: true, strategy: consistent-hashing, timeout: 2000, max-failed-times: 3}
+Select: &Select {type: select, url: 'https://www.gstatic.com/generate_204', disable-udp: false, hidden: false, include-all: true}
+UrlTest: &UrlTest {type: url-test, url: 'https://www.gstatic.com/generate_204', disable-udp: false, hidden: true, include-all: true, interval: 300, lazy: true, tolerance: 50, timeout: 2000, max-failed-times: 3}
+FallBack: &FallBack {type: fallback, url: 'https://www.gstatic.com/generate_204',disable-udp: false, hidden: true, include-all: true, interval: 300, lazy: true, timeout: 2000,  max-failed-times: 3}
+# LoadBalance: &LoadBalance {type: load-balance, url: 'https://www.gstatic.com/generate_204', disable-udp: false, hidden: true, include-all: true, interval: 300, lazy: true, strategy: consistent-hashing, timeout: 2000, max-failed-times: 3}
 
 # 稳定 IP 锚点
 pg_FallBack_US: &pg_FallBack_US [
@@ -211,8 +211,12 @@ proxy-groups:
 
 rules:
   # 大原则: ip 规则放到域名规则前面, 避免 DNS 污染导致的误判
-  # 【最高优先级】局域网与私有地址 (防止回环和内网泄露)
-  # 必须放在第一位，且 private_ip 建议加上 no-resolve 避免不必要的 DNS 解析
+  # 【自定义拦截/代理】用户手动指定的规则
+  - DOMAIN-SUFFIX,github.com,🚀 默认代理
+  - IP-CIDR,145.239.142.185/32,🚀 默认代理,no-resolve
+  - RULE-SET,custom_proxy,🚀 默认代理
+  - RULE-SET,custom_direct,直连
+  # 局域网与私有地址 (防止回环和内网泄露)
   - IP-CIDR6,::/0,REJECT,no-resolve
   - IP-CIDR,169.254.169.254/32,REJECT,no-resolve
   - RULE-SET,private_ip,直连,no-resolve
@@ -222,10 +226,6 @@ rules:
   - RULE-SET,speedtest_domain,直连
   - RULE-SET,apple_domain,直连  # Apple 服务包含 AppStore 下载，建议直连
   - RULE-SET,apple_ip,直连,no-resolve
-  # 【自定义拦截/代理】用户手动指定的规则
-  - DOMAIN-SUFFIX,github.com,🚀 默认代理
-  - RULE-SET,custom_proxy,🚀 默认代理
-  - RULE-SET,custom_direct,直连
   # 【特定应用代理】需要分流的特定 APP, 按照使用频率从高到低排序
   - RULE-SET,ai_domain,🤖 AI
   - RULE-SET,onedrive_domain,🐬 OneDrive
