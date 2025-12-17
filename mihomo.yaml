@@ -86,18 +86,16 @@ dns:
     - 119.29.29.29                      # 腾讯 Pod 备用
   # 解析「代理服务器域名」，防止 nameserver 无法访问导致连不上代理
   proxy-server-nameserver:
-    - 223.5.5.5                         # 阿里 UDP
-    - 119.29.29.29                      # 腾讯 Pod 备用
+    - https://dns.alidns.com/dns-query # 阿里 DoH
+    - https://doh.pub/dns-query        # 腾讯 DNSPod DoH
   # 「直连」域名的解析
   direct-nameserver:
     - https://dns.alidns.com/dns-query # 阿里 DoH
     - https://doh.pub/dns-query        # 腾讯 DNSPod DoH
   # 用来解析没有匹配到任何「域名规则」的域名，通常是国外域名，建议使用国外 DoH 防止污染。
-  # 但这个解析结果并不会用来发起连接，所以为了追求速度不使用 DoH 或直接使用国内 DNS 也行。
-  # 所以保持国内 DoQ/DoH 作为主解析最可靠
   nameserver:
-    - https://dns.alidns.com/dns-query # 阿里 DoH
-    - https://doh.pub/dns-query        # 腾讯 DNSPod DoH
+    - https://dns.google/dns-query          # Google DoH
+    - https://cloudflare-dns.com/dns-query  # Cloudflare DoHPod DoH
 
 # 嗅探配置
 sniffer:
@@ -217,7 +215,7 @@ rules:
   - RULE-SET,custom_proxy,🚀 默认代理
   - RULE-SET,custom_direct,直连
   # 局域网与私有地址 (防止回环和内网泄露)
-  - IP-CIDR6,::/0,REJECT,no-resolve
+  # - IP-CIDR6,::/0,REJECT,no-resolve  # 已在全局设置 ipv6: false，此规则多余
   - IP-CIDR,169.254.169.254/32,REJECT,no-resolve
   - RULE-SET,private_ip,直连,no-resolve
   - RULE-SET,private_domain,直连
