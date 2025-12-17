@@ -56,6 +56,8 @@ tun:
   enable: true
   # system/gvisor/mixed
   stack: system
+  # 严格路由模式，防止绕过 TUN 的 DNS 泄露
+  strict-route: true
   dns-hijack: ["any:53", "tcp://any:53"]
   mtu: 1500
   auto-route: true
@@ -80,24 +82,20 @@ dns:
     - rule-set:connectivity-check_domain
     - rule-set:tld-cn_domain
     - rule-set:geolocation-cn_domain
-  # 用于解析「DNS 服务器自身域名」，以及 Mihomo 启动初期的基础解析。
-  default-nameserver:
-    - 223.5.5.5                         # 阿里 UDP
-    - 119.29.29.29                      # 腾讯 Pod 备用
+
+  # 用来解析没有匹配到任何「域名规则」的域名，通常是国外域名
+  # 使用代理组发起 DNS 请求，避免直连失败导致 DNS 泄露
+  nameserver:
+    - "https://dns.google/dns-query#🚀 默认代理"
+    - "https://cloudflare-dns.com/dns-query#🚀 默认代理"
   # 解析「代理服务器域名」，防止 nameserver 无法访问导致连不上代理
   proxy-server-nameserver:
-    - 223.5.5.5                         # 阿里 UDP
-    - 119.29.29.29                      # 腾讯 Pod 备用
+    - https://223.5.5.5/dns-query      # 阿里 DoH (IP形式，无需解析)
+    - https://223.6.6.6/dns-query      # 阿里 DoH 备用
   # 「直连」域名的解析
   direct-nameserver:
-    - https://dns.alidns.com/dns-query # 阿里 DoH
-    - https://doh.pub/dns-query        # 腾讯 DNSPod DoH
-  # 用来解析没有匹配到任何「域名规则」的域名，通常是国外域名，建议使用国外 DoH 防止污染。
-  # 但这个解析结果并不会用来发起连接，所以为了追求速度不使用 DoH 或直接使用国内 DNS 也行。
-  # 所以保持国内 DoQ/DoH 作为主解析最可靠
-  nameserver:
-    - https://dns.alidns.com/dns-query # 阿里 DoH
-    - https://doh.pub/dns-query        # 腾讯 DNSPod DoH
+    - https://223.5.5.5/dns-query      # 阿里 DoH (IP形式，无需解析)
+    - https://223.6.6.6/dns-query      # 阿里 DoH 备用
 
 # 嗅探配置
 sniffer:
@@ -211,13 +209,15 @@ proxy-groups:
 
 rules:
   # 大原则: ip 规则放到域名规则前面, 避免 DNS 污染导致的误判
+  # 【DNS 服务器】国内 DNS 强制直连
+  - IP-CIDR,223.5.5.5/32,直连,no-resolve
+  - IP-CIDR,223.6.6.6/32,直连,no-resolve
   # 【自定义拦截/代理】用户手动指定的规则
   - DOMAIN-SUFFIX,github.com,🚀 默认代理
   - IP-CIDR,145.239.142.185/32,🚀 默认代理,no-resolve
   - RULE-SET,custom_proxy,🚀 默认代理
   - RULE-SET,custom_direct,直连
   # 局域网与私有地址 (防止回环和内网泄露)
-  - IP-CIDR6,::/0,REJECT,no-resolve
   - IP-CIDR,169.254.169.254/32,REJECT,no-resolve
   - RULE-SET,private_ip,直连,no-resolve
   - RULE-SET,private_domain,直连
@@ -238,11 +238,10 @@ rules:
   # 【通用大厂代理】
   - RULE-SET,youtube_domain,📹 YouTube
   - RULE-SET,google_domain,🍀 Google
-  - RULE-SET,google_ip,🍀 Google
-  # 【国内规则】(性能优化关键点)
-  # 逻辑：如果是国内域名->直接走，不用去匹配后面庞大的“非国内”列表。
+  - RULE-SET,google_ip,🍀 Google,no-resolve
+  # 【国内规则】
   - RULE-SET,cn_domain,直连
-  - RULE-SET,cn_ip,直连
+  - RULE-SET,cn_ip,直连,no-resolve
   # 【兜底规则】
   # 如果上面都没匹配中，判断是不是“非中国IP/域名”。如果是，走默认代理。
   - RULE-SET,geolocation-!cn_domain,🚀 默认代理
