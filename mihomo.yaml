@@ -80,22 +80,18 @@ dns:
     - rule-set:connectivity-check_domain
     - rule-set:tld-cn_domain
     - rule-set:geolocation-cn_domain
-  # 用于解析「DNS 服务器自身域名」，以及 Mihomo 启动初期的基础解析。
-  default-nameserver:
-    - 223.5.5.5                         # 阿里 UDP
-    - 119.29.29.29                      # 腾讯 Pod 备用
   # 解析「代理服务器域名」，防止 nameserver 无法访问导致连不上代理
   proxy-server-nameserver:
-    - https://dns.alidns.com/dns-query # 阿里 DoH
-    - https://doh.pub/dns-query        # 腾讯 DNSPod DoH
+    - https://223.5.5.5/dns-query      # 阿里 DoH (IP形式，无需解析)
+    - https://223.6.6.6/dns-query      # 阿里 DoH 备用
   # 「直连」域名的解析
   direct-nameserver:
-    - https://dns.alidns.com/dns-query # 阿里 DoH
-    - https://doh.pub/dns-query        # 腾讯 DNSPod DoH
-  # 用来解析没有匹配到任何「域名规则」的域名，通常是国外域名，建议使用国外 DoH 防止污染。
+    - https://223.5.5.5/dns-query      # 阿里 DoH (IP形式，无需解析)
+    - https://223.6.6.6/dns-query      # 阿里 DoH 备用
+  # 用来解析没有匹配到任何「域名规则」的域名，通常是国外域名
   nameserver:
-    - https://dns.google/dns-query          # Google DoH
-    - https://cloudflare-dns.com/dns-query  # Cloudflare DoHPod DoH
+    - https://1.1.1.1/dns-query        # Cloudflare DoH (IP形式，无需解析)
+    - https://8.8.8.8/dns-query        # Google DoH (IP形式，无需解析)
 
 # 嗅探配置
 sniffer:
