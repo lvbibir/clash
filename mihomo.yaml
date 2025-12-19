@@ -77,11 +77,8 @@ dns:
   fake-ip-range: 198.18.0.1/16
   fake-ip-filter-mode: blacklist
   fake-ip-filter:
-    - rule-set:fakeipfilter
-    - rule-set:private_domain
-    - rule-set:connectivity-check_domain
-    - rule-set:tld-cn_domain
-    - rule-set:geolocation-cn_domain
+    - "+.market.xiaomi.com"
+    - "lancache.steamcontent.com"
 
   # 用来解析没有匹配到任何「域名规则」的域名，通常是国外域名
   # 使用代理组发起 DNS 请求，避免直连失败导致 DNS 泄露
@@ -267,10 +264,6 @@ rule-providers:
     <<: *RuleSet_classical_text
     url: "https://raw.githubusercontent.com/lvbibir/clash/refs/heads/master/Ruleset/Direct.list"
     path: ./rule-providers/custom_direct.list
-  fakeipfilter:
-    <<: *RuleSet_domain_text
-    url: "https://raw.githubusercontent.com/lvbibir/clash/refs/heads/master/Ruleset/Fakeipfilter.list"
-    path: ./rule-providers/fakeipfilter.list
   # 通用域名规则
   private_domain:
     <<: *RuleSet_domain_mrs
@@ -324,10 +317,6 @@ rule-providers:
     <<: *RuleSet_domain_mrs
     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/ookla-speedtest.mrs"
     path: ./rule-providers/speedtest_domain.mrs
-  geolocation-cn_domain:
-    <<: *RuleSet_domain_mrs
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-cn.mrs"
-    path: ./rule-providers/geolocation-cn_domain.mrs
   geolocation-!cn_domain:
     <<: *RuleSet_domain_mrs
     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.mrs"
@@ -336,14 +325,6 @@ rule-providers:
     <<: *RuleSet_domain_mrs
     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs"
     path: ./rule-providers/cn_domain.mrs
-  tld-cn_domain:
-    <<: *RuleSet_domain_mrs
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tld-cn.mrs"
-    path: ./rule-providers/tld-cn_domain.mrs
-  connectivity-check_domain:
-    <<: *RuleSet_domain_mrs
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/connectivity-check.mrs"
-    path: ./rule-providers/connectivity-check_domain.mrs
   # 通用IP 规则
   private_ip:
     <<: *RuleSet_ipcidr_mrs
