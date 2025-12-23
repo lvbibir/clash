@@ -83,8 +83,10 @@ dns:
   # 用来解析没有匹配到任何「域名规则」的域名，通常是国外域名
   # 使用代理组发起 DNS 请求，避免直连失败导致 DNS 泄露
   nameserver:
-    - "https://dns.google/dns-query#🚀 默认代理"
-    - "https://cloudflare-dns.com/dns-query#🚀 默认代理"
+    - https://1.1.1.1/dns-query
+    - https://8.8.8.8/dns-query
+    # - "https://dns.google/dns-query#🚀 默认代理"
+    # - "https://cloudflare-dns.com/dns-query#🚀 默认代理"
   # 解析「代理服务器域名」，防止 nameserver 无法访问导致连不上代理
   proxy-server-nameserver:
     - https://223.5.5.5/dns-query      # 阿里 DoH (IP形式，无需解析)
@@ -110,7 +112,7 @@ sniffer:
     - "Mijia Cloud"
     - "+.push.apple.com"
   skip-src-address:
-    - 192.168.1.1/24
+    - 192.168.1.0/24
   skip-dst-address:
     - 91.105.192.0/23
     - 91.108.4.0/22
@@ -145,7 +147,7 @@ FilterAll: &FilterAll '^(?!.*?(?i)(GB\s*[\|丨]\s*GB|GB|Traffic|Reset|Days|Left|
 # 负载均衡 [每 300 秒一次惰性健康检查，时延超过 2 秒判定为失败，失败 3 次自动触发健康检查]
 Select: &Select {type: select, url: 'https://www.gstatic.com/generate_204', disable-udp: false, hidden: false, include-all: true}
 UrlTest: &UrlTest {type: url-test, url: 'https://www.gstatic.com/generate_204', disable-udp: false, hidden: true, include-all: true, interval: 300, lazy: true, tolerance: 50, timeout: 2000, max-failed-times: 3}
-FallBack: &FallBack {type: fallback, url: 'https://www.gstatic.com/generate_204',disable-udp: false, hidden: true, include-all: true, interval: 300, lazy: true, timeout: 2000,  max-failed-times: 3}
+FallBack: &FallBack {type: fallback, url: 'https://www.gstatic.com/generate_204', disable-udp: false, hidden: true, include-all: true, interval: 300, lazy: true, timeout: 2000, max-failed-times: 3}
 # LoadBalance: &LoadBalance {type: load-balance, url: 'https://www.gstatic.com/generate_204', disable-udp: false, hidden: true, include-all: true, interval: 300, lazy: true, strategy: consistent-hashing, timeout: 2000, max-failed-times: 3}
 
 # 稳定 IP 锚点
@@ -174,7 +176,7 @@ proxy-groups:
   - {name: 🌐 全部节点, <<: *Select, filter: *FilterAll}
   # --- 功能策略组 ---
   - {name: 🚀 默认代理, type: select, proxies: *pg_Proxy}
-  - {name: 🤖 AI, type: select, proxies: *pg_FallBack_US}
+  - {name: 🤖 AIGC, type: select, proxies: *pg_FallBack_US}
   - {name: 🎮 Steam, type: select, proxies: *pg_Direct}
   - {name: 🐬 OneDrive, type: select, proxies: *pg_Direct}
   - {name: Ⓜ️ Microsoft, type: select, proxies: *pg_Direct}
@@ -205,17 +207,13 @@ proxy-groups:
   - {name: ♻️ 香港自动, <<: *UrlTest, filter: *FilterHK}
 
 rules:
-  # 大原则: ip 规则放到域名规则前面, 避免 DNS 污染导致的误判
   # 【DNS 服务器】国内 DNS 强制直连
   - IP-CIDR,223.5.5.5/32,直连,no-resolve
   - IP-CIDR,223.6.6.6/32,直连,no-resolve
-  # 【自定义拦截/代理】用户手动指定的规则
-  - DOMAIN-SUFFIX,github.com,🚀 默认代理
-  - IP-CIDR,145.239.142.185/32,🚀 默认代理,no-resolve
+  # 【自定义拦截/代理】自定义规则
   - RULE-SET,custom_proxy,🚀 默认代理
   - RULE-SET,custom_direct,直连
   # 局域网与私有地址 (防止回环和内网泄露)
-  - IP-CIDR,169.254.169.254/32,REJECT,no-resolve
   - RULE-SET,private_ip,直连,no-resolve
   - RULE-SET,private_domain,直连
   # 【特定直连】高频、大流量且必须直连的服务
@@ -224,7 +222,7 @@ rules:
   - RULE-SET,apple_domain,直连  # Apple 服务包含 AppStore 下载，建议直连
   - RULE-SET,apple_ip,直连,no-resolve
   # 【特定应用代理】需要分流的特定 APP, 按照使用频率从高到低排序
-  - RULE-SET,ai_domain,🤖 AI
+  - RULE-SET,ai_domain,🤖 AIGC
   - RULE-SET,onedrive_domain,🐬 OneDrive
   - RULE-SET,steam_domain,🎮 Steam
   - RULE-SET,github_domain,👨🏿‍💻 GitHub
@@ -249,7 +247,7 @@ rules:
 ### 规则配置
 RuleSet_classical_text: &RuleSet_classical_text {type: http, behavior: classical, interval: 43200, format: text}
 RuleSet_domain_mrs: &RuleSet_domain_mrs {type: http, behavior: domain, interval: 43200, format: mrs}
-RuleSet_domain_text: &RuleSet_domain_text {type: http, behavior: domain, interval: 43200, format: text}
+# RuleSet_domain_text: &RuleSet_domain_text {type: http, behavior: domain, interval: 43200, format: text}
 RuleSet_ipcidr_mrs: &RuleSet_ipcidr_mrs {type: http, behavior: ipcidr, interval: 43200, format: mrs}
 
 # 规则集
