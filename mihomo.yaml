@@ -207,6 +207,8 @@ proxy-groups:
   - {name: ♻️ 香港自动, <<: *UrlTest, filter: *FilterHK}
 
 rules:
+  # 【云元数据服务】WSL2/本地环境不可达，直接拒绝避免无意义的连接尝试
+  - IP-CIDR,169.254.169.254/32,REJECT,no-resolve
   # 【DNS 服务器】国内 DNS 强制直连
   - IP-CIDR,223.5.5.5/32,直连,no-resolve
   - IP-CIDR,223.6.6.6/32,直连,no-resolve
