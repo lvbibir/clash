@@ -77,14 +77,13 @@ dns:
   fake-ip-range: 198.18.0.1/16
   fake-ip-filter-mode: blacklist
   fake-ip-filter:
-    - "+.market.xiaomi.com"
-    - "lancache.steamcontent.com"
+    - rule-set:fakeipfilter
 
   # 用来解析没有匹配到任何「域名规则」的域名，通常是国外域名
   # 使用代理组发起 DNS 请求，避免直连失败导致 DNS 泄露
   nameserver:
-    - https://1.1.1.1/dns-query
-    - https://8.8.8.8/dns-query
+    - https://1.1.1.1/dns-query#🚀 默认代理
+    - https://8.8.8.8/dns-quer#🚀 默认代理
     # - "https://dns.google/dns-query#🚀 默认代理"
     # - "https://cloudflare-dns.com/dns-query#🚀 默认代理"
   # 解析「代理服务器域名」，防止 nameserver 无法访问导致连不上代理
@@ -114,6 +113,7 @@ sniffer:
   skip-src-address:
     - 192.168.1.0/24
   skip-dst-address:
+    # telegram ip
     - 91.105.192.0/23
     - 91.108.4.0/22
     - 91.108.8.0/21
@@ -122,7 +122,6 @@ sniffer:
     - 95.161.64.0/20
     - 149.154.160.0/20
     - 185.76.151.0/24
-    - 169.254.169.254/32
     - 2001:67c:4e8::/48
     - 2001:b28:f23c::/47
     - 2001:b28:f23f::/48
@@ -138,7 +137,7 @@ FilterJP: &FilterJP '^(?=.*?(?i)(Japan|\bJP\b|东京|大阪|埼玉|川日|泉日
 FilterSG: &FilterSG '^(?=.*?(?i)(Singapore|\bSG\b|新加坡|狮城|狮)).*(?<!(?i)(回国|过期|剩余|官网|网址|节点|订阅|机场|客服|校园|本土)).*$'
 FilterTW: &FilterTW '^(?=.*?(?i)(Taiwan|\bTW\b|\bTai(?:wan)?\b|台湾|台北|台中|台南|高雄|新竹)).*(?<!(?i)(回国|过期|剩余|官网|网址|节点|订阅|机场|客服|校园|本土)).*$'
 FilterHK: &FilterHK '^(?=.*?(?i)(\bHK\b|Hong.?Kong|香港|深港|广港|港区)).*(?<!(?i)(回国|过期|剩余|官网|网址|节点|订阅|机场|客服|校园|本土)).*$'
-FilterAll: &FilterAll '^(?!.*?(?i)(GB\s*[\|丨]\s*GB|GB|Traffic|Reset|Days|Left|Expire|Date|套餐|流量|重置|剩余|到期|时间|频道)).*$'
+FilterAll: &FilterAll '^(?!.*?(?i)(GB\s*[\|丨]\s*GB|GB|Traffic|Reset|Days|Left|Expire|Date|Direct|直连|套餐|流量|重置|剩余|到期|时间|频道)).*$'
 
 ### 策略组基础配置
 # 手动选择
@@ -156,11 +155,10 @@ pg_FallBack_US: &pg_FallBack_US [
 ]
 # 所有节点锚点, 优先自动选择
 pg_Proxy: &pg_Proxy [
-  ♻️ 自动选择, 🌐 全部节点,
+  ♻️ 自动选择, 🌐 全部节点, 直连,
   ♻️ 美国自动, ♻️ 日本自动, ♻️ 狮城自动, ♻️ 台湾自动, ♻️ 香港自动, 
   🔯 美国故转, 🔯 日本故转, 🔯 狮城故转, 🔯 台湾故转, 🔯 香港故转, 
-  🇺🇸 美国节点, 🇯🇵 日本节点, 🇸🇬 狮城节点, 🇹🇼 台湾节点, 🇭🇰 香港节点, 
-  直连
+  🇺🇸 美国节点, 🇯🇵 日本节点, 🇸🇬 狮城节点, 🇹🇼 台湾节点, 🇭🇰 香港节点
 ]
 # 所有节点锚点, 优先直连
 pg_Direct: &pg_Direct [
@@ -207,49 +205,84 @@ proxy-groups:
   - {name: ♻️ 香港自动, <<: *UrlTest, filter: *FilterHK}
 
 rules:
+  # ============================================
+  # 第一层：特殊处理（REJECT / 关键基础设施）
+  # ============================================
   # 【云元数据服务】WSL2/本地环境不可达，直接拒绝避免无意义的连接尝试
   - IP-CIDR,169.254.169.254/32,REJECT,no-resolve
-  # 【DNS 服务器】国内 DNS 强制直连
-  - IP-CIDR,223.5.5.5/32,直连,no-resolve
-  - IP-CIDR,223.6.6.6/32,直连,no-resolve
-  # 【自定义拦截/代理】自定义规则
+  
+  # 【DNS 服务器】确保 DNS 请求正确路由
+  - IP-CIDR,223.5.5.5/32,直连,no-resolve       # 阿里 DNS
+  - IP-CIDR,223.6.6.6/32,直连,no-resolve       # 阿里 DNS 备用
+  - IP-CIDR,1.1.1.1/32,🚀 默认代理,no-resolve   # Cloudflare DNS
+  - IP-CIDR,8.8.8.8/32,🚀 默认代理,no-resolve   # Google DNS
+
+  # ============================================
+  # 第二层：自定义规则（优先级最高）
+  # ============================================
   - RULE-SET,custom_proxy,🚀 默认代理
   - RULE-SET,custom_direct,直连
-  # 局域网与私有地址 (防止回环和内网泄露)
+
+  # ============================================
+  # 第三层：局域网与私有地址（防止回环和内网泄露）
+  # ============================================
   - RULE-SET,private_ip,直连,no-resolve
   - RULE-SET,private_domain,直连
-  # 【特定直连】高频、大流量且必须直连的服务
-  # 放在前面是为了减轻性能负担，测速和苹果更新没必要去跑后面的规则
+
+  # ============================================
+  # 第四层：高频直连服务（减轻规则匹配负担）
+  # ============================================
+  # 测速服务 - 流量大，直连更准确
   - RULE-SET,speedtest_domain,直连
-  - RULE-SET,apple_domain,直连  # Apple 服务包含 AppStore 下载，建议直连
+  # Apple 服务 - 包含 AppStore 下载，建议直连
+  - RULE-SET,apple_domain,直连
   - RULE-SET,apple_ip,直连,no-resolve
-  # 【特定应用代理】需要分流的特定 APP, 按照使用频率从高到低排序
+
+  # ============================================
+  # 第五层：特定应用代理（按使用频率从高到低排序）
+  # ============================================
+  # AI 服务 - ChatGPT/Claude 等
   - RULE-SET,ai_domain,🤖 AIGC
+  # 云存储
   - RULE-SET,onedrive_domain,🐬 OneDrive
+  # 游戏平台
   - RULE-SET,steam_domain,🎮 Steam
+  # 开发工具
   - RULE-SET,github_domain,👨🏿‍💻 GitHub
+  # 社交媒体
   - RULE-SET,x_domain,✖️ X
   - RULE-SET,telegram_domain,✈️ Telegram
+  - RULE-SET,telegram_ip,✈️ Telegram,no-resolve
+  # 娱乐服务
   - RULE-SET,sony_domain,🎧 Sony
+  # 微软服务
   - RULE-SET,microsoft_domain,Ⓜ️ Microsoft
-  # 【通用大厂代理】
+
+  # ============================================
+  # 第六层：通用大厂代理（Google 系）
+  # ============================================
   - RULE-SET,youtube_domain,📹 YouTube
   - RULE-SET,google_domain,🍀 Google
   - RULE-SET,google_ip,🍀 Google,no-resolve
-  # 【国内规则】
+
+  # ============================================
+  # 第七层：国内规则（大量直连匹配）
+  # ============================================
   - RULE-SET,cn_domain,直连
   - RULE-SET,cn_ip,直连,no-resolve
-  # 【兜底规则】
-  # 如果上面都没匹配中，判断是不是“非中国IP/域名”。如果是，走默认代理。
+
+  # ============================================
+  # 第八层：兜底规则
+  # ============================================
+  # 非中国域名 - 走默认代理
   - RULE-SET,geolocation-!cn_domain,🚀 默认代理
-  # 【最终漏网之鱼】
-  # 既不是国内，也不在已知非国内列表里，全走代理（白名单模式，防墙）
+  # 最终漏网之鱼 - 白名单模式，未知流量走代理（防墙）
   - MATCH,🐟 漏网之鱼
 
 ### 规则配置
 RuleSet_classical_text: &RuleSet_classical_text {type: http, behavior: classical, interval: 43200, format: text}
 RuleSet_domain_mrs: &RuleSet_domain_mrs {type: http, behavior: domain, interval: 43200, format: mrs}
-# RuleSet_domain_text: &RuleSet_domain_text {type: http, behavior: domain, interval: 43200, format: text}
+RuleSet_domain_text: &RuleSet_domain_text {type: http, behavior: domain, interval: 43200, format: text}
 RuleSet_ipcidr_mrs: &RuleSet_ipcidr_mrs {type: http, behavior: ipcidr, interval: 43200, format: mrs}
 
 # 规则集
@@ -264,6 +297,10 @@ rule-providers:
     <<: *RuleSet_classical_text
     url: "https://raw.githubusercontent.com/lvbibir/clash/refs/heads/master/Ruleset/Direct.list"
     path: ./rule-providers/custom_direct.list
+  fakeipfilter:
+    <<: *RuleSet_domain_text
+    url: "https://raw.githubusercontent.com/juewuy/ShellCrash/refs/heads/dev/public/fake_ip_filter.list"
+    path: ./rule-providers/fakeipfilter.list
   # 通用域名规则
   private_domain:
     <<: *RuleSet_domain_mrs
@@ -342,3 +379,7 @@ rule-providers:
     <<: *RuleSet_ipcidr_mrs
     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo-lite/geoip/apple.mrs"
     path: ./rule-providers/apple_ip.mrs
+  telegram_ip:
+    <<: *RuleSet_ipcidr_mrs
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo-lite/geoip/telegram.mrs"
+    path: ./rule-providers/telegram_ip.mrs
