@@ -20,6 +20,14 @@
 # IP-CIDR,208.67.222.222/32,no-resolve
 # IP-CIDR,208.67.220.220/32,no-resolve
 
+# 公益站
+DOMAIN-SUFFIX,224442.xyz
+DOMAIN-SUFFIX,668556.xyz
+DOMAIN-SUFFIX,cloudflareinsights.com
+
+# vscode 设置同步
+DOMAIN,vscode-sync.trafficmanager.net
+
 # 漫画
 DOMAIN-SUFFIX,copymanga.site
 DOMAIN-KEYWORD,copymanga
