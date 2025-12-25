@@ -78,22 +78,12 @@ dns:
   fake-ip-filter-mode: blacklist
   fake-ip-filter:
     - rule-set:fakeipfilter
-
-  # 用来解析没有匹配到任何「域名规则」的域名，通常是国外域名
-  # 使用代理组发起 DNS 请求，避免直连失败导致 DNS 泄露
   nameserver:
-    - https://1.1.1.1/dns-query#🚀 默认代理
-    - https://8.8.8.8/dns-query#🚀 默认代理
-    # - "https://dns.google/dns-query#🚀 默认代理"
-    # - "https://cloudflare-dns.com/dns-query#🚀 默认代理"
-  # 解析「代理服务器域名」，防止 nameserver 无法访问导致连不上代理
+    - https://223.5.5.5/dns-query
+    - https://doh.pub/dns-query
   proxy-server-nameserver:
-    - https://223.5.5.5/dns-query      # 阿里 DoH (IP形式，无需解析)
-    - https://223.6.6.6/dns-query      # 阿里 DoH 备用
-  # 「直连」域名的解析
-  direct-nameserver:
-    - https://223.5.5.5/dns-query      # 阿里 DoH (IP形式，无需解析)
-    - https://223.6.6.6/dns-query      # 阿里 DoH 备用
+    - https://223.5.5.5/dns-query
+    - https://doh.pub/dns-query
 
 # 嗅探配置
 sniffer:
@@ -210,13 +200,16 @@ rules:
   # ============================================
   # 【云元数据服务】WSL2/本地环境不可达，直接拒绝避免无意义的连接尝试
   - IP-CIDR,169.254.169.254/32,REJECT,no-resolve
+  # kilo code 等工具会本地探测 llm 服务, 导致很多无意义的日志刷屏, 故禁用
+  - DST-PORT,11434,REJECT
+  # windows 的天气等小组件使用的 cdn, 同样因为无法连接导致日志刷屏, 故禁用
   - DOMAIN,t-ring-fdv2.msedge.net,REJECT,no-resolve
 
   # 【DNS 服务器】确保 DNS 请求正确路由
   - IP-CIDR,223.5.5.5/32,直连,no-resolve       # 阿里 DNS
   - IP-CIDR,223.6.6.6/32,直连,no-resolve       # 阿里 DNS 备用
-  - IP-CIDR,1.1.1.1/32,🚀 默认代理,no-resolve   # Cloudflare DNS
-  - IP-CIDR,8.8.8.8/32,🚀 默认代理,no-resolve   # Google DNS
+  # - IP-CIDR,1.1.1.1/32,🚀 默认代理,no-resolve   # Cloudflare DNS
+  # - IP-CIDR,8.8.8.8/32,🚀 默认代理,no-resolve   # Google DNS
 
   # ============================================
   # 第二层：自定义规则（优先级最高）
