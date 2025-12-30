@@ -4,7 +4,7 @@ allow-lan: true
 mode: rule
 bind-address: "0.0.0.0"
 mixed-port: 7890
-ipv6: false
+ipv6: true
 unified-delay: true
 log-level: warning
 find-process-mode: strict
@@ -69,7 +69,7 @@ dns:
   enable: true
   cache-algorithm: arc
   listen: 0.0.0.0:1053
-  ipv6: false
+  ipv6: true
   respect-rules: true
   use-hosts: true
   use-system-hosts: true
@@ -245,8 +245,8 @@ rules:
   - RULE-SET,github_domain,👨🏿‍💻 GitHub
   # 社交媒体
   - RULE-SET,x_domain,✖️ X
-  - RULE-SET,telegram_domain,✈️ Telegram
   - RULE-SET,telegram_ip,✈️ Telegram,no-resolve
+  - RULE-SET,telegram_domain,✈️ Telegram
   # 娱乐服务
   - RULE-SET,sony_domain,🎧 Sony
   # 微软服务
