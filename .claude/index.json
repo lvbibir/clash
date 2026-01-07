@@ -1,0 +1,62 @@
+{
+  "last_scan_timestamp": "2026-01-07T22:06:55+00:00",
+  "project_name": "clash",
+  "project_type": "configuration",
+  "description": "Mihomo (Clash Meta) 内核配置文件仓库，用于跨平台代理服务配置管理",
+  "modules": [
+    {
+      "name": "root",
+      "path": "/home/lvbibir/clash",
+      "type": "config-root",
+      "entry_files": [
+        "mihomo.yaml",
+        "lvbibir.ini"
+      ],
+      "key_configs": [
+        "mihomo.yaml",
+        "lvbibir.ini"
+      ],
+      "scripts": [
+        "mihomo-manager.ps1"
+      ],
+      "documentation": [
+        "README.md",
+        "LICENSE"
+      ],
+      "coverage": "100%"
+    },
+    {
+      "name": "Ruleset",
+      "path": "/home/lvbibir/clash/Ruleset",
+      "type": "ruleset-module",
+      "description": "自定义分流规则模块",
+      "key_files": [
+        "Direct.list",
+        "Proxy.list"
+      ],
+      "coverage": "100%"
+    }
+  ],
+  "stats": {
+    "total_files_estimated": 8,
+    "scanned_files": 8,
+    "coverage_percentage": 100,
+    "ignored_files": {
+      ".git": "版本控制目录"
+    }
+  },
+  "languages": {
+    "YAML": 1,
+    "INI": 1,
+    "PowerShell": 1,
+    "Text/List": 2,
+    "Markdown": 1
+  },
+  "scanning_status": {
+    "completed": true,
+    "truncated": false,
+    "phase_reached": "阶段 C (深度补捞 - 已完成)"
+  },
+  "gaps": [],
+  "next_steps": []
+}
