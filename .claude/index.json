@@ -1,28 +1,35 @@
 {
-  "last_scan_timestamp": "2026-01-07T22:06:55+00:00",
+  "last_scan_timestamp": "2026-01-19T12:11:59+08:00",
   "project_name": "clash",
   "project_type": "configuration",
-  "description": "Mihomo (Clash Meta) 内核配置文件仓库，用于跨平台代理服务配置管理",
+  "description": "Mihomo (Clash Meta) 内核配置文件仓库, 用于跨平台代理服务配置管理",
   "modules": [
     {
       "name": "root",
       "path": "/home/lvbibir/clash",
       "type": "config-root",
       "entry_files": [
-        "mihomo.yaml",
+        "mihomo.yaml"
+      ],
+      "deprecated_files": [
         "lvbibir.ini"
       ],
       "key_configs": [
-        "mihomo.yaml",
-        "lvbibir.ini"
-      ],
-      "scripts": [
-        "mihomo-manager.ps1"
+        "mihomo.yaml"
       ],
       "documentation": [
         "README.md",
+        "CLAUDE.md",
         "LICENSE"
       ],
+      "key_sections": {
+        "subscription": "mihomo.yaml:41-44",
+        "proxy_groups": "mihomo.yaml:161-195",
+        "rules": "mihomo.yaml:197-274",
+        "rule_providers": "mihomo.yaml:283-379",
+        "dns": "mihomo.yaml:68-86",
+        "tun": "mihomo.yaml:55-65"
+      },
       "coverage": "100%"
     },
     {
@@ -32,31 +39,42 @@
       "description": "自定义分流规则模块",
       "key_files": [
         "Direct.list",
-        "Proxy.list"
+        "Proxy.list",
+        "CLAUDE.md"
       ],
+      "file_stats": {
+        "Proxy.list": "114 行, 代理规则",
+        "Direct.list": "5 行, 直连规则"
+      },
       "coverage": "100%"
     }
   ],
   "stats": {
-    "total_files_estimated": 8,
-    "scanned_files": 8,
+    "total_files_estimated": 6,
+    "scanned_files": 6,
     "coverage_percentage": 100,
-    "ignored_files": {
+    "ignored_directories": [
+      ".git"
+    ],
+    "ignored_reason": {
       ".git": "版本控制目录"
     }
   },
   "languages": {
     "YAML": 1,
     "INI": 1,
-    "PowerShell": 1,
     "Text/List": 2,
-    "Markdown": 1
+    "Markdown": 2
   },
   "scanning_status": {
     "completed": true,
     "truncated": false,
-    "phase_reached": "阶段 C (深度补捞 - 已完成)"
+    "phase_reached": "阶段 D (文档生成 - 已完成)"
   },
+  "generated_docs": [
+    "/home/lvbibir/clash/CLAUDE.md",
+    "/home/lvbibir/clash/Ruleset/CLAUDE.md"
+  ],
   "gaps": [],
   "next_steps": []
 }
