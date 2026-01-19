@@ -1,47 +1,20 @@
-# Clash/Mihomo 代理配置项目
+# Clash/Mihomo 代理配置项目 - AI 上下文文档
 
 > 个人使用的 mihomo 内核配置文件, 适用于 Windows/Linux/macOS 等平台.
+>
+> **详细的项目说明、使用指南、配置特性请查看 [README.md](./README.md)**
 
-## 项目愿景
+## 项目概览
 
-提供一套开箱即用、安全可靠的代理配置方案, 重点解决:
+Mihomo (Clash Meta) 内核配置仓库, 核心特性:
 - DNS 防泄露 (Fake-IP + respect-rules + TUN 严格路由)
 - 精细化分流 (8 层规则体系)
 - 自动化节点选择 (URL-Test / Fallback)
 
-## 架构总览
-
-```
-配置项目
-    |
-    +-- mihomo.yaml             主配置文件 (mihomo 内核)
-    |       |
-    |       +-- proxy-providers    订阅节点源
-    |       +-- proxy-groups       策略组定义
-    |       +-- rules              分流规则
-    |       +-- rule-providers     规则集引用
-    |
-    +-- mihomo-manager.ps1      Windows 管理脚本 (交互菜单 + CLI)
-    |
-    +-- Ruleset/                自定义规则集模块
-            |
-            +-- Proxy.list  代理规则
-            +-- Direct.list 直连规则
-```
-
-## 模块结构图
-
-```mermaid
-graph TD
-    A["(根) clash"] --> B["mihomo.yaml<br/>主配置文件"];
-    A --> G["mihomo-manager.ps1<br/>Windows 管理脚本"];
-    A --> C["Ruleset/"];
-    C --> D["Proxy.list"];
-    C --> E["Direct.list"];
-    A --> F["lvbibir.ini<br/>(已弃用)"];
-
-    click C "./Ruleset/CLAUDE.md" "查看 Ruleset 模块文档"
-```
+**关键文件:**
+- `mihomo.yaml` - 主配置文件
+- `mihomo-manager.ps1` - Windows 管理脚本 (启停/重载/延迟测试)
+- `Ruleset/` - 自定义规则集模块
 
 ## 模块索引
 
@@ -50,74 +23,17 @@ graph TD
 | 根配置 | `/` | mihomo 主配置、订阅、策略组、规则体系 | 活跃 |
 | [Ruleset](./Ruleset/CLAUDE.md) | `Ruleset/` | 自定义代理/直连规则列表 | 活跃 |
 
-## 运行与开发
+## 快速参考
 
-### 快速启动
+**启动与管理:**
+- Linux/macOS: `./mihomo -d . -f mihomo.yaml`
+- Windows: `.\mihomo-manager.ps1` (交互菜单) 或 `.\mihomo-manager.ps1 start` (命令行)
+- 详细说明见 [README.md - 快速开始](./README.md#-快速开始)
 
-**Linux/macOS:**
-```bash
-# 下载 mihomo 内核
-wget https://github.com/MetaCubeX/mihomo/releases/latest/download/mihomo-linux-amd64 -O mihomo
-chmod +x mihomo
-
-# 启动 (需先修改订阅地址)
-./mihomo -d . -f mihomo.yaml
-```
-
-**Windows (PowerShell):**
-```powershell
-# 使用管理脚本 (推荐)
-.\mihomo-manager.ps1           # 交互菜单模式
-.\mihomo-manager.ps1 start     # 命令行启动
-.\mihomo-manager.ps1 status    # 查看状态
-.\mihomo-manager.ps1 reload    # 重载配置
-.\mihomo-manager.ps1 test https://www.google.com  # 测试 URL 延迟
-
-# 延迟测试说明
-# - 自动切换到不同策略组 (直连、美国、日本、狮城、台湾、香港)
-# - 每次测试前清除 DNS 和 Fake-IP 缓存
-# - 发起真实 HTTP 请求测量实际延迟
-# - 测试完成后自动恢复原始策略组选择
-# - 可在 mihomo 日志中看到真实连接信息
-
-# 环境变量 (可选)
-$env:MIHOMO_SECRET = "your_secret"  # 设置 API 密钥
-```
-
-### 配置修改
-
-1. 编辑 `mihomo.yaml` 第 43 行, 替换订阅地址
-2. 编辑 `Ruleset/*.list` 添加自定义规则
-
-### 端口与服务
-
-| 服务 | 地址 | 说明 |
-|------|------|------|
-| 混合代理 | `127.0.0.1:7890` | HTTP/SOCKS5 |
-| DNS | `0.0.0.0:1053` | 本地 DNS |
-| Web UI | `http://127.0.0.1:9090/ui` | 密码: `123456` |
-
-## 测试策略
-
-本项目为配置文件项目, 无自动化测试. 验证方式:
-
-1. **DNS 泄露测试**: 访问 https://dnsleaktest.com/
-2. **节点连通性**: Web UI 查看延迟测试结果
-3. **规则匹配**: 使用 mihomo 日志 (`log-level: debug`)
-
-## 编码规范
-
-### YAML 配置
-
-- 使用 2 空格缩进
-- 使用 YAML 锚点 (`&name`) 和引用 (`*name`, `<<: *name`) 减少重复
-- 注释使用 `#`, 与代码同行时前置 2 空格
-
-### 规则列表 (.list)
-
-- 每行一条规则
-- 格式: `TYPE,VALUE[,OPTIONS]`
-- 支持的 TYPE: `DOMAIN`, `DOMAIN-SUFFIX`, `DOMAIN-KEYWORD`, `IP-CIDR`
+**关键端口:**
+- 混合代理: `127.0.0.1:7890` (HTTP/SOCKS5)
+- Web UI: `http://127.0.0.1:9090/ui` (密码: `123456`)
+- DNS: `0.0.0.0:1053`
 
 ## AI 使用指引
 
@@ -147,8 +63,18 @@ $env:MIHOMO_SECRET = "your_secret"  # 设置 API 密钥
 - 订阅地址 (`url: '---'`) 需手动替换
 - 规则顺序影响匹配优先级 (第一层优先级最高)
 
+### 详细文档引用
+
+- **配置特性说明**: [README.md - 配置特性](./README.md#-配置特性)
+- **DNS 防泄露原理**: [README.md - DNS 配置](./README.md#dns-配置)
+- **规则体系详解**: [README.md - 规则体系](./README.md#规则体系)
+- **高级配置选项**: [README.md - 高级配置](./README.md#-高级配置)
+- **常见问题解答**: [README.md - 常见问题](./README.md#-常见问题)
+- **编码规范**: [README.md - 编码规范](./README.md#编码规范)
+
 ## 变更记录 (Changelog)
 
 | 时间 | 操作 | 说明 |
 |------|------|------|
+| 2026-01-19 14:30:00 | 精简 | 移除与 README.md 重复的详细说明, 添加文档引用链接 |
 | 2026-01-19 12:11:59 | 创建 | 初始化 AI 上下文文档系统 |
