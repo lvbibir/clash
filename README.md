@@ -9,7 +9,7 @@
 ├── LICENSE
 ├── README.md
 ├── lvbibir.ini                 # ini 格式的 clash 配置文件 (⚠️已弃用, 不再更新)
-├── mihomo-manager.ps1          # mihomo 裸核启停脚本
+├── mihomo-manager.ps1          # Windows 管理脚本 (启停/重载/延迟测试)
 ├── mihomo.yaml                 # mihomo 内核配置文件
 └── Ruleset/                    # 自用 clash 分流规则
     ├── Direct.list             # 直连规则列表
@@ -181,7 +181,45 @@ chmod +x mihomo
 
 #### Windows
 
-Windows 平台的详细部署步骤请参考博客文章: [mihomo 裸核部署 - Windows 端](https://www.lvbibir.cn/posts/tech/mihomo-core-only-setup)
+**使用管理脚本 (推荐)**
+
+本项目提供了 PowerShell 管理脚本，支持交互菜单和命令行两种模式：
+
+```powershell
+# 交互菜单模式
+.\mihomo-manager.ps1
+
+# 命令行模式
+.\mihomo-manager.ps1 start     # 启动服务
+.\mihomo-manager.ps1 stop      # 停止服务
+.\mihomo-manager.ps1 restart   # 重启服务
+.\mihomo-manager.ps1 status    # 查看状态
+.\mihomo-manager.ps1 reload    # 重载配置
+.\mihomo-manager.ps1 test https://www.google.com  # 测试 URL 延迟
+
+# 环境变量 (可选)
+$env:MIHOMO_SECRET = "your_secret"  # 设置 API 密钥
+```
+
+**延迟测试功能**
+
+`test` 命令可以测试指定 URL 在不同策略组下的实际访问延迟：
+
+- 自动测试直连和各地区代理节点 (美国/日本/狮城/台湾/香港)
+- 使用 Mihomo 内置延迟测试 API，测量真实连接延迟
+- 自动识别最快节点并提供推荐
+- 支持自定义测试 URL
+
+```powershell
+# 测试示例
+.\mihomo-manager.ps1 test https://www.google.com
+.\mihomo-manager.ps1 test https://www.youtube.com
+.\mihomo-manager.ps1 test https://github.com
+```
+
+**手动部署**
+
+详细的手动部署步骤请参考博客文章: [mihomo 裸核部署 - Windows 端](https://www.lvbibir.cn/posts/tech/mihomo-core-only-setup)
 
 ### 4. 配置系统代理
 
@@ -345,6 +383,27 @@ curl http://127.0.0.1:9090/proxies
 - **健康检查**: 超时 2 秒判定失败，连续失败 3 次触发主动检查
 
 详见 [`mihomo.yaml:138-139`](mihomo.yaml:138-139)
+
+### 6. 如何测试不同节点的实际访问速度？
+
+**Windows 用户**可以使用管理脚本的 `test` 命令：
+
+```powershell
+.\mihomo-manager.ps1 test https://www.google.com
+```
+
+该命令会：
+- 测试指定 URL 在直连和各地区代理下的延迟
+- 使用 Mihomo 内置 API 进行真实连接测试
+- 自动识别并推荐最快的节点
+
+**Linux/macOS 用户**可以使用 Mihomo API：
+
+```bash
+# 测试指定策略组的延迟
+curl "http://127.0.0.1:9090/proxies/♻️%20美国自动/delay?url=https://www.google.com&timeout=10000" \
+  -H "Authorization: Bearer 123456"
+```
 
 ## 📚 参考资料
 
