@@ -1,0 +1,9 @@
+# Runtime generated files
+proxy-providers/
+rule-providers/
+cache.db
+*.log
+
+# Python cache
+__pycache__/
+*.pyc
