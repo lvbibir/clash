@@ -21,10 +21,10 @@ lan-allowed-ips:
   - 127.0.0.1/8
 
 secret: 123456
-external-controller: 127.0.0.1:9090
+external-controller: 0.0.0.0:9090
 external-ui: ui
 external-ui-name: zashboard
-external-ui-url: https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip
+external-ui-url: https://github.com/Zephyruso/zashboard/releases/latest/download/dist-no-fonts.zip
 
 # geodata-mode: true 
 # geodata-loader: memconservative
@@ -38,25 +38,32 @@ NodeParam: &NodeParam {type: http, interval: 86400, health-check: {enable: true,
 
 proxy-providers:
   # === 主订阅 ===
+
   150G_Mouth:
     <<: *NodeParam        # 引用锚点
     url: '---'
     path: './proxy-providers/providers-1.yaml'
+    override:
+      additional-prefix: "1. "
 
-  # === 备订阅 ===
   # 500G_LongTerm:
   #   <<: *NodeParam
   #   url: '---'
   #   path: './proxy-providers/providers-2.yaml'
   #   override:
-  #     additional-prefix: "1.备 "
+  #     additional-prefix: "2. "
+
+  # xingyun:
+  #   <<: *NodeParam
+  #   url: '---'
+  #   path: './proxy-providers/providers-3.yaml'
+  #   override:
+  #     additional-prefix: "3. "
 
 # 入站
 tun:
   enable: true
-  # system/gvisor/mixed
   stack: system
-  # 严格路由模式，防止绕过 TUN 的 DNS 泄露
   strict-route: true
   dns-hijack: ["any:53", "tcp://any:53"]
   mtu: 1500
@@ -122,7 +129,7 @@ proxies:
 
 # 节点筛选
 # 按地区筛选
-FilterUS: &FilterUS '^(?=.*?(?i)(United States|America|\bUS\b|硅谷|洛杉矶|西雅图|纽约|芝加哥|拉斯维加斯|美帝|美国)).*(?<!(?i)(回国|过期|剩余|官网|网址|节点|订阅|机场|客服|校园|本土)).*$'
+FilterUS: &FilterUS '^(?=.*?(?i)(United States|America|\bUS\b|硅谷|家宽|洛杉矶|西雅图|纽约|芝加哥|拉斯维加斯|美帝|美国)).*(?<!(?i)(回国|过期|剩余|官网|网址|节点|订阅|机场|客服|校园|本土)).*$'
 FilterJP: &FilterJP '^(?=.*?(?i)(Japan|\bJP\b|东京|大阪|埼玉|川日|泉日|日区|日本)).*(?<!(?i)(回国|过期|剩余|官网|网址|节点|订阅|机场|客服|校园|本土)).*$'
 FilterSG: &FilterSG '^(?=.*?(?i)(Singapore|\bSG\b|新加坡|狮城|狮)).*(?<!(?i)(回国|过期|剩余|官网|网址|节点|订阅|机场|客服|校园|本土)).*$'
 FilterTW: &FilterTW '^(?=.*?(?i)(Taiwan|\bTW\b|\bTai(?:wan)?\b|台湾|台北|台中|台南|高雄|新竹)).*(?<!(?i)(回国|过期|剩余|官网|网址|节点|订阅|机场|客服|校园|本土)).*$'
