@@ -166,6 +166,37 @@ proxy-providers:
     path: './proxy-providers/providers-1.yaml'
 ```
 
+#### (可选) Git 自动脱敏, 提交不带敏感信息
+
+如果你希望把本地真实可用的 `"mihomo.yaml"`(包含 `secret` 和订阅链接) 同步到 GitHub, 但仓库里只保留脱敏后的占位符版本, 可以使用 git filter:
+
+1. 安装本仓库的 filter(只写入本地 `.git/config`):
+
+```bash
+bash "scripts/setup-git-filter.sh"
+```
+
+2. 首次启用后, 建议对已跟踪的文件做一次 renormalize, 确保暂存区立即变成脱敏内容:
+
+```bash
+git add --renormalize "mihomo.yaml"
+```
+
+完成后, 你可以正常把你的配置复制到仓库里的 `"mihomo.yaml"` 并提交, git 会在 `add/commit` 时自动把以下内容清洗成占位符(仓库里默认是 `secret: 123456` / `url: '---'`), 你的工作区文件本身不受影响:
+
+- `secret: ...`
+- `proxy-providers` 下每个 provider 的 `url: ...`
+
+你可以用这个命令确认“暂存区里的文件已经脱敏”:
+
+```bash
+git show :"mihomo.yaml"
+```
+
+说明: clean filter 只作用于暂存区, 所以 `git status` 里 `"mihomo.yaml"` 可能长期显示为“有修改”属于正常现象. 以 `git diff --cached` / `git show` 为准.
+
+注意: `git checkout/pull` 会把仓库里的脱敏版本写回工作区. 建议把真实可用的 `"mihomo.yaml"` 放在其他目录维护, 需要同步到 GitHub 时再复制到本仓库提交.
+
 ### 3. 启动 mihomo
 
 #### Linux/macOS
