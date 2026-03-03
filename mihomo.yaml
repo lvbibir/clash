@@ -4,7 +4,7 @@ allow-lan: true
 mode: rule
 bind-address: "0.0.0.0"
 mixed-port: 7890
-ipv6: true
+ipv6: false
 unified-delay: true
 log-level: warning
 find-process-mode: strict
@@ -34,7 +34,7 @@ external-ui-url: https://github.com/Zephyruso/zashboard/releases/latest/download
 #   geoip: https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip-lite.dat
 
 # 订阅基础配置 [每天更新一次订阅节点，每 300 秒一次健康检查]
-NodeParam: &NodeParam {type: http, interval: 86400, health-check: {enable: true, url: 'https://www.gstatic.com/generate_204', interval: 300}}
+NodeParam: &NodeParam {type: http, interval: 86400, proxy: DIRECT, health-check: {enable: true, url: 'https://www.gstatic.com/generate_204', interval: 300}}
 
 proxy-providers:
   # === 主订阅 ===
@@ -68,15 +68,18 @@ tun:
   dns-hijack: ["any:53", "tcp://any:53"]
   mtu: 1500
   auto-route: true
-  auto-redirect: true
+  auto-redirect: false
   auto-detect-interface: true
+
+hosts:
+  '5TWRDFkQTBoT1R3w.redug8dqjjktoapmdfmqymrvi0iupi.com': 121.14.131.153
 
 # DNS 配置
 dns:
   enable: true
   cache-algorithm: arc
   listen: 0.0.0.0:1053
-  ipv6: true
+  ipv6: false
   respect-rules: true
   use-hosts: true
   use-system-hosts: true
