@@ -7,3 +7,4 @@ cache.db
 # Python cache
 __pycache__/
 *.pyc
+.ace-tool/
