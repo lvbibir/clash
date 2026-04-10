@@ -37,7 +37,6 @@ external-ui-url: https://github.com/Zephyruso/zashboard/releases/latest/download
 NodeParam: &NodeParam {type: http, interval: 86400, proxy: DIRECT, health-check: {enable: true, url: 'https://www.gstatic.com/generate_204', interval: 300}}
 
 proxy-providers:
-  # === 主订阅 ===
 
   150G_Mouth:
     <<: *NodeParam        # 引用锚点
@@ -60,6 +59,13 @@ proxy-providers:
   #   override:
   #     additional-prefix: "3. "
 
+  # pokemon:
+  #   <<: *NodeParam
+  #   url: '---'
+  #   path: './proxy-providers/providers-4.yaml'
+  #   override:
+  #     additional-prefix: "4. "
+
 # 入站
 tun:
   enable: true
@@ -71,8 +77,6 @@ tun:
   auto-redirect: false
   auto-detect-interface: true
 
-hosts:
-  '5TWRDFkQTBoT1R3w.redug8dqjjktoapmdfmqymrvi0iupi.com': 121.14.131.153
 
 # DNS 配置
 dns:
@@ -210,16 +214,12 @@ rules:
   # ============================================
   # 【云元数据服务】WSL2/本地环境不可达，直接拒绝避免无意义的连接尝试
   - IP-CIDR,169.254.169.254/32,REJECT,no-resolve
-  # kilo code 等工具会本地探测 llm 服务, 导致很多无意义的日志刷屏, 故禁用
-  - DST-PORT,11434,REJECT
   # windows 的天气等小组件使用的 cdn, 同样因为无法连接导致日志刷屏, 故禁用
   - DOMAIN,t-ring-fdv2.msedge.net,REJECT,no-resolve
 
   # 【DNS 服务器】确保 DNS 请求正确路由
   - IP-CIDR,223.5.5.5/32,直连,no-resolve       # 阿里 DNS
   - IP-CIDR,223.6.6.6/32,直连,no-resolve       # 阿里 DNS 备用
-  # - IP-CIDR,1.1.1.1/32,🚀 默认代理,no-resolve   # Cloudflare DNS
-  # - IP-CIDR,8.8.8.8/32,🚀 默认代理,no-resolve   # Google DNS
 
   # ============================================
   # 第二层：自定义规则（优先级最高）
@@ -236,30 +236,21 @@ rules:
   # ============================================
   # 第四层：高频直连服务（减轻规则匹配负担）
   # ============================================
-  # 测速服务 - 流量大，直连更准确
   - RULE-SET,speedtest_domain,直连
-  # Apple 服务 - 包含 AppStore 下载，建议直连
   - RULE-SET,apple_domain,直连
   - RULE-SET,apple_ip,直连,no-resolve
 
   # ============================================
   # 第五层：特定应用代理（按使用频率从高到低排序）
   # ============================================
-  # AI 服务 - ChatGPT/Claude 等
   - RULE-SET,ai_domain,🤖 AIGC
-  # 云存储
   - RULE-SET,onedrive_domain,🐬 OneDrive
-  # 游戏平台
   - RULE-SET,steam_domain,🎮 Steam
-  # 开发工具
   - RULE-SET,github_domain,👨🏿‍💻 GitHub
-  # 社交媒体
   - RULE-SET,x_domain,✖️ X
   - RULE-SET,telegram_ip,✈️ Telegram,no-resolve
   - RULE-SET,telegram_domain,✈️ Telegram
-  # 娱乐服务
   - RULE-SET,sony_domain,🎧 Sony
-  # 微软服务
   - RULE-SET,microsoft_domain,Ⓜ️ Microsoft
 
   # ============================================
