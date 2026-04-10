@@ -9,3 +9,7 @@ __pycache__/
 *.pyc
 .ace-tool/
 .codex
+
+ui/
+meta-backup/
+mihomo-windows-amd64.exe
