@@ -1,10 +1,12 @@
 # 个人列表, 默认直连
-# onedrive
-# PROCESS-NAME,OneDrive.exe
 
 DOMAIN-SUFFIX,daxiaamu.com
 DOMAIN-SUFFIX,hybgzs.com
 DOMAIN-SUFFIX,runanytime.hxi.me
 DOMAIN-SUFFIX,dog.ssrdog.cc
+DOMAIN-SUFFIX,x666.me
+DOMAIN-SUFFIX,love.p6m6.com
+DOMAIN-SUFFIX,52pokemon.top
+DOMAIN-SUFFIX,spaceship.com
 
 PROCESS-NAME,SlayTheSpire2.exe

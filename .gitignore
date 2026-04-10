@@ -8,3 +8,4 @@ cache.db
 __pycache__/
 *.pyc
 .ace-tool/
+.codex
