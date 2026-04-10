@@ -42,8 +42,6 @@ proxy-providers:
     <<: *NodeParam        # 引用锚点
     url: '---'
     path: './proxy-providers/providers-1.yaml'
-    override:
-      additional-prefix: "1. "
 
   # 500G_LongTerm:
   #   <<: *NodeParam
