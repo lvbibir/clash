@@ -50,15 +50,95 @@ $ApiPort    = 9090
 $ProxyHost  = "127.0.0.1"  # 代理主机地址
 $ProxyPort  = 7890
 
-# Secret 配置：优先从环境变量读取，否则使用默认值
-$Secret = if ($env:MIHOMO_SECRET) { $env:MIHOMO_SECRET } else { "123456" }
-# =====================================================
-
 $FullExe     = Join-Path $CorePath $ExeName
 $FullConfig  = Join-Path $CorePath $ConfigFile
 $ProcessName = [IO.Path]::GetFileNameWithoutExtension($ExeName)
 $ApiUrl      = "http://${ApiHost}:$ApiPort"
 $ProxyUrl    = "http://${ProxyHost}:${ProxyPort}"
+
+function Get-MihomoSecretFromConfig {
+    param(
+        [Parameter(Mandatory)]
+        [string]$ConfigPath
+    )
+
+    if (-not (Test-Path -LiteralPath $ConfigPath)) {
+        return $null
+    }
+
+    try {
+        foreach ($line in (Get-Content -LiteralPath $ConfigPath -Encoding UTF8 -ErrorAction Stop)) {
+            if ($line -match "^\s*#") { continue }
+            if ($line -match "^\s*secret\s*:\s*(.*?)\s*(?:\s+#.*)?$") {
+                $value = $Matches[1].Trim()
+                if ($value.StartsWith("'") -and $value.EndsWith("'") -and $value.Length -ge 2) {
+                    $value = $value.Substring(1, $value.Length - 2)
+                }
+                elseif ($value.StartsWith('"') -and $value.EndsWith('"') -and $value.Length -ge 2) {
+                    $value = $value.Substring(1, $value.Length - 2)
+                }
+                if (-not [string]::IsNullOrWhiteSpace($value)) {
+                    return $value
+                }
+            }
+        }
+    }
+    catch {
+        return $null
+    }
+
+    return $null
+}
+
+function Format-SecretForDisplay {
+    param(
+        [AllowNull()]
+        [string]$Value,
+        [ValidateSet("mask", "full")]
+        [string]$Mode = "mask"
+    )
+
+    if ([string]::IsNullOrEmpty($Value)) {
+        return "<empty>"
+    }
+
+    if ($Mode -eq "full") {
+        return $Value
+    }
+
+    if ($Value.Length -le 4) {
+        return ("*" * $Value.Length)
+    }
+
+    return ($Value.Substring(0, 2) + ("*" * ($Value.Length - 4)) + $Value.Substring($Value.Length - 2, 2))
+}
+
+# Secret 获取优先级: 环境变量 > mihomo.yaml > 默认值
+$SecretDefault = "123456"
+$SecretSource = "default"
+$Secret = $SecretDefault
+
+if (-not [string]::IsNullOrWhiteSpace($env:MIHOMO_SECRET)) {
+    $Secret = $env:MIHOMO_SECRET
+    $SecretSource = "env"
+}
+else {
+    $SecretFromFile = Get-MihomoSecretFromConfig -ConfigPath $FullConfig
+    if (-not [string]::IsNullOrWhiteSpace($SecretFromFile)) {
+        $Secret = $SecretFromFile
+        $SecretSource = "config"
+    }
+}
+
+$SecretDebugMode = if ([string]::IsNullOrWhiteSpace($env:MIHOMO_SECRET_DEBUG)) { "" } else { $env:MIHOMO_SECRET_DEBUG.Trim().ToLowerInvariant() }
+if ($SecretDebugMode -ne "" -and $SecretDebugMode -ne "0" -and $SecretDebugMode -ne "false" -and $SecretDebugMode -ne "off") {
+    $mode = if ($SecretDebugMode -eq "full") { "full" } else { "mask" }
+    $displaySecret = Format-SecretForDisplay -Value $Secret -Mode $mode
+    $configExists = Test-Path -LiteralPath $FullConfig
+    Write-Host ("[debug] Secret source: {0}, secret: {1}, config: {2}, exists: {3}" -f $SecretSource, $displaySecret, $FullConfig, $configExists) -ForegroundColor DarkGray
+}
+# =====================================================
+
 $Headers     = if ($Secret) { @{ Authorization = "Bearer $Secret" } } else { @{} }
 
 # ====================== 工具函数 ======================
@@ -154,15 +234,18 @@ Mihomo Manager - 使用说明
 
 环境变量:
   MIHOMO_SECRET  设置 API 密钥 (可选)
+  MIHOMO_SECRET_DEBUG  输出当前 Secret 获取结果 (可选): 1=mask, full=full
 
 配置说明:
   如果 API 或代理地址不是默认的 127.0.0.1，请修改脚本中的配置：
-  - `$ApiHost` (默认: 172.26.160.1)
-  - `$ProxyHost` (默认: 172.26.160.1)
+  - `$ApiHost` (默认: 127.0.0.1)
+  - `$ProxyHost` (默认: 127.0.0.1)
   - `$ApiPort` (默认: 9090)
   - `$ProxyPort` (默认: 7890)
 
 配置文件位置: $FullConfig
+
+Secret 优先级: MIHOMO_SECRET > mihomo.yaml 的 secret > 默认值
 
 "@ -ForegroundColor Cyan
 }
