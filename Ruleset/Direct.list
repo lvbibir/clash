@@ -10,3 +10,5 @@ DOMAIN-SUFFIX,52pokemon.top
 DOMAIN-SUFFIX,spaceship.com
 
 PROCESS-NAME,SlayTheSpire2.exe
+IP-CIDR,12.12.12.0/24
+
