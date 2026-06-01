@@ -21,7 +21,7 @@ Mihomo (Clash Meta) 内核配置仓库, 核心特性:
 | 模块 | 路径 | 职责 | 状态 |
 |------|------|------|------|
 | 根配置 | `/` | mihomo 主配置、订阅、策略组、规则体系 | 活跃 |
-| [Ruleset](./Ruleset/CLAUDE.md) | `Ruleset/` | 自定义代理/直连规则列表 | 活跃 |
+| [Ruleset](./Ruleset/AGENTS.md) | `Ruleset/` | 自定义代理/直连规则列表 | 活跃 |
 
 ## 快速参考
 
