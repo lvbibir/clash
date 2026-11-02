@@ -36,6 +36,65 @@ param(
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $OutputEncoding = [System.Text.Encoding]::UTF8
 
+# ====================== 管理员权限 ======================
+function Test-IsAdministrator {
+    $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
+    $principal = New-Object Security.Principal.WindowsPrincipal($identity)
+
+    return $principal.IsInRole(
+        [Security.Principal.WindowsBuiltInRole]::Administrator
+    )
+}
+
+# 管理脚本需要管理员权限运行时，通过 UAC 重新启动自身
+if (-not (Test-IsAdministrator)) {
+    if ([string]::IsNullOrWhiteSpace($PSCommandPath)) {
+        Write-Host "无法确定当前脚本路径，无法自动提权。" -ForegroundColor Red
+        exit 1
+    }
+
+    # 获取当前 PowerShell 可执行文件，兼容 Windows PowerShell 和 pwsh
+    $PowerShellExe = (Get-Process -Id $PID).Path
+    if ([string]::IsNullOrWhiteSpace($PowerShellExe)) {
+        $PowerShellExe = if ($PSVersionTable.PSEdition -eq "Core") {
+            "pwsh.exe"
+        }
+        else {
+            "powershell.exe"
+        }
+    }
+
+    # 重新传递脚本参数。脚本路径、Action 和 URL 加引号，避免路径或 URL 中有空格时丢失参数。
+    $RelaunchArguments = @(
+        "-NoProfile"
+        "-File"
+        "`"$PSCommandPath`""
+    )
+
+    if (-not [string]::IsNullOrWhiteSpace($Action)) {
+        $RelaunchArguments += @("-Action", "`"$Action`"")
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($Url)) {
+        $RelaunchArguments += @("-Url", "`"$Url`"")
+    }
+
+    try {
+        Start-Process `
+            -FilePath $PowerShellExe `
+            -Verb RunAs `
+            -ArgumentList $RelaunchArguments
+
+        # 退出当前非管理员实例，避免两个管理脚本同时运行。
+        exit 0
+    }
+    catch {
+        Write-Host "管理员提权失败或用户取消了 UAC 授权: $($_.Exception.Message)" -ForegroundColor Red
+        exit 1
+    }
+}
+# =======================================================
+
 # 有效的操作列表
 $ValidActions = @("start", "stop", "restart", "status", "reload", "test", "help", "")
 
