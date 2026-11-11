@@ -483,6 +483,18 @@ curl "http://127.0.0.1:9090/proxies/♻️%20美国自动/delay?url=https://www.
   -H "Authorization: Bearer <mihomo.yaml 中的 secret 值>"
 ```
 
+### 7. 为什么 `git status` 显示一堆文件的 mode change (100644 => 100755)?
+
+仓库检出在 Windows 盘 (如 WSL2 的 `/mnt/d`) 时会出现: NTFS 没有 Unix 权限位概念, WSL 的 drvfs 把所有文件映射成带执行位, 而文件当初以 644 mode 提交, git (默认 `core.filemode=true`) 于是把每个 644 文件都报成"权限变了"——**文件内容并未改变**, 纯粹是检出环境的权限位差异。
+
+修复: 在仓库内执行 (只影响本仓库, 不改全局):
+
+```bash
+git config core.filemode false
+```
+
+git 将不再跟踪权限位变化, `git status` 恢复干净. 注意该配置写在本地 `.git/config`, **不随仓库分发**, 新环境/新 clone 后如有同样现象需重新设置.
+
 ## 📚 参考资料
 
 本仓库配置参考了以下链接内容，以及 [sparkle](https://github.com/xishang0128/sparkle) / [FlClash](https://github.com/chen08209/FlClash) TG 群组各位大佬：
