@@ -8,10 +8,15 @@
 .
 ├── LICENSE
 ├── README.md
+├── AGENTS.md                   # AI 上下文文档
 ├── lvbibir.ini                 # ini 格式的 clash 配置文件 (⚠️已弃用, 不再更新)
 ├── mihomo-manager.ps1          # Windows 管理脚本 (启停/重载/延迟测试)
 ├── mihomo.yaml                 # mihomo 内核配置文件
+├── scripts/                    # Git 自动脱敏工具
+│   ├── setup-git-filter.sh     # 安装脱敏 filter
+│   └── mihomo_git_filter.py    # clean/smudge 过滤逻辑
 └── Ruleset/                    # 自用 clash 分流规则
+    ├── AGENTS.md               # 规则集 AI 上下文文档
     ├── Direct.list             # 直连规则列表
     └── Proxy.list              # 代理规则列表
 ```
@@ -20,31 +25,42 @@
 
 ### 核心特性
 
-- **🔒 DNS 防泄露**: 基于 Fake-IP + respect-rules + TUN 严格路由的多重防护机制
+- **🔒 DNS 防泄露**: 基于 Fake-IP (IPv4/IPv6) + respect-rules + TUN 严格路由的多重防护机制
 - **🚀 性能优化**: TCP 并发、连接复用、ARC 缓存算法
 - **🎯 精细分流**: 8 层规则体系，按优先级和使用频率优化
-- **🌐 地区策略**: 支持美国/日本/新加坡/台湾/香港节点分组
-- **⚡ 自动切换**: URL-Test 自动测速、Fallback 故障转移
+- **🌐 地区策略**: 美国/日本/狮城/台湾/香港节点分组，各自独立自动测速
+- **⚡ 自动切换**: URL-Test 自动测速 (Fallback/负载均衡锚点已备好, 按需启用)
 - **🛡️ 智能嗅探**: HTTP/TLS/QUIC 协议嗅探，准确识别域名
+- **🏠 局域网接入**: `allow-lan` 已启用，局域网内其他设备也可直接使用本机代理
 
 ### 代理模式
 
 #### 节点策略组
 
-| 策略组类型 | 说明 |
-|-----------|------|
-| ♻️ 自动选择 | URL-Test 模式，自动选择延迟最低的节点 |
-| 🌐 全部节点 | 手动选择模式，可从所有节点中选择 |
-| 🔯 故障转移 | Fallback 模式，自动切换到可用节点 |
-| 🇺🇸/🇯🇵/🇸🇬/🇹🇼/🇭🇰 | 按地区筛选的节点组 |
+**当前启用:**
+
+| 策略组 | 类型 | 说明 |
+|-----------|------|------|
+| ♻️ 自动选择 | URL-Test | 全局自动测速，选择延迟最低的节点 (容差 50ms) |
+| ♻️ 美国/日本/狮城/台湾/香港 自动 | URL-Test | 各地区独立自动测速 |
+| 🌐 全部节点 | Select | 手动选择模式，可从所有节点中选择 |
+| 直连 / 内网代理 | 节点 | 内置直连节点，以及局域网 HTTP 代理节点 (可用 `interface-name` 指定出口网卡) |
+
+**可取消注释启用** (锚点已预置在配置中):
+
+| 策略组 | 类型 | 说明 |
+|-----------|------|------|
+| 🇺🇸/🇯🇵/🇸🇬/🇹🇼/🇭🇰 地区节点 | Select | 按地区筛选的节点组，手动选择 |
+| 🔯 地区故转 | Fallback | 故障转移模式，自动切换到可用节点 |
+| 负载均衡 | LoadBalance | 一致性哈希负载均衡 |
 
 #### 功能策略组
 
 | 策略组 | 默认策略 | 说明 |
 |--------|---------|------|
 | 🚀 默认代理 | 优先自动选择 | 未匹配规则的流量 |
-| 🤖 AIGC | 美国故障转移 | ChatGPT/Claude 等 AI 服务 |
-| 🍀 Google | 美国故障转移 | Google 全家桶服务 |
+| 🤖 AIGC | 优先自动选择 | ChatGPT/Claude 等 AI 服务 |
+| 🍀 Google | 优先自动选择 | Google 全家桶服务 |
 | 👨🏿‍💻 GitHub | 优先代理 | GitHub 相关服务 |
 | ✖️ X | 优先代理 | X (Twitter) 服务 |
 | ✈️ Telegram | 优先代理 | Telegram 服务 |
@@ -65,10 +81,18 @@
 2. **respect-rules**: DNS 查询遵循路由规则，代理域名的 DNS 通过代理发送
 3. **TUN 严格路由**: 劫持所有端口 53 流量，防止 DNS 绕过
 4. **分层解析器**: 代理服务器/直连域名/默认域名使用不同的 DNS 策略
+5. **IPv6 Fake-IP**: 为 AAAA 查询分配 fake IPv6 (非空应答)，避免 Windows DNS 客户端收到空应答后重试导致解析卡 11 秒
 
 #### DNS 服务器
 
 ```yaml
+enhanced-mode: fake-ip
+fake-ip-range: 198.18.0.1/16       # Fake IPv4
+fake-ip-range6: fd00::/8           # Fake IPv6 (配套 ipv6: true)
+fake-ip-filter-mode: blacklist
+fake-ip-filter:
+  - rule-set:fakeipfilter          # ShellCrash 黑名单, 局域网域名绕过 Fake-IP
+
 nameserver:
   - https://223.5.5.5/dns-query    # 阿里 DoH
   - https://doh.pub/dns-query      # 腾讯 DoH
@@ -93,7 +117,7 @@ proxy-server-nameserver:
 
 | 层级 | 类型 | 说明 |
 |-----|------|------|
-| 第一层 | 特殊处理 | REJECT 规则、DNS 服务器路由 |
+| 第一层 | 特殊处理 | REJECT 规则 (云元数据/Windows 小组件)、DNS 服务器路由 |
 | 第二层 | 自定义规则 | 用户自定义的代理/直连规则 |
 | 第三层 | 局域网/私有地址 | 防止回环和内网泄露 |
 | 第四层 | 高频直连服务 | Apple、Speedtest 等 |
@@ -105,6 +129,11 @@ proxy-server-nameserver:
 ### 性能优化
 
 ```yaml
+# 入站与局域网
+mixed-port: 7890                  # 混合代理端口 (HTTP/SOCKS5)
+allow-lan: true                   # 允许局域网接入
+ipv6: true                        # 启用 IPv6
+
 # TCP 优化
 tcp-concurrent: true              # TCP 并发
 keep-alive-idle: 600              # TCP keepalive 空闲时间
@@ -118,6 +147,11 @@ dns:
 # 连接优化
 unified-delay: true               # 统一延迟测试
 find-process-mode: strict         # 严格进程匹配
+
+# 状态持久化
+profile:
+  store-selected: true            # 记住策略组选择
+  store-fake-ip: true             # 记住 Fake-IP 映射
 ```
 
 ### 嗅探配置
@@ -134,12 +168,16 @@ sniffer:
       ports: [443, 8443]
     QUIC:                         # QUIC 嗅探
       ports: [443, 8443]
+  skip-domain:                    # 跳过嗅探的域名 (如 Mijia Cloud、Apple 推送)
+  skip-src-address:                # 跳过嗅探的源地址段
+  skip-dst-address:               # 跳过嗅探的目标地址段 (如 Telegram 自身 IP)
 ```
 
 **嗅探作用**:
 - 从 HTTP/TLS/QUIC 流量中提取真实域名
 - 即使应用使用 IP 直连，也能应用域名规则
 - 提高规则匹配的准确性
+- `skip-*` 列表中的流量跳过嗅探，避免干扰自有 IP 直连的场景 (如 Telegram 走官方 IP 时)
 
 ## 🚀 快速开始
 
@@ -154,13 +192,15 @@ git clone https://github.com/lvbibir/clash.git
 cd clash
 ```
 
+> 仓库中的 `mihomo.yaml` 是脱敏占位版本 (`secret: 123456` / `url: '---'`)，克隆后需要按第 2 步填入自己的订阅地址。
+
 ### 2. 修改订阅
 
-编辑 [`mihomo.yaml`](mihomo.yaml:41-44)，替换为你的订阅地址：
+编辑 [`mihomo.yaml`](mihomo.yaml:36-39)，替换为你的订阅地址 (provider 名称可随意改, 不影响策略组):
 
 ```yaml
 proxy-providers:
-  150G_Mouth:
+  xsus:
     <<: *NodeParam
     url: '你的订阅地址'  # 修改此处
     path: './proxy-providers/providers-1.yaml'
@@ -232,6 +272,11 @@ chmod +x mihomo
 $env:MIHOMO_SECRET = "your_secret"  # 设置 API 密钥
 ```
 
+说明:
+- **Secret 优先级**: `MIHOMO_SECRET` 环境变量 > `mihomo.yaml` 的 `secret` 字段 > 默认值 `123456`
+- 脚本检测到非管理员权限时会自动通过 UAC 提权重启自身
+- 交互菜单中还包含 **验证配置** 选项 (调用 `mihomo -t` 校验)
+
 **延迟测试功能**
 
 `test` 命令可以测试指定 URL 在不同策略组下的实际访问延迟：
@@ -256,7 +301,8 @@ $env:MIHOMO_SECRET = "your_secret"  # 设置 API 密钥
 
 - **HTTP/HTTPS 代理**: `127.0.0.1:7890`
 - **SOCKS5 代理**: `127.0.0.1:7890` (mixed-port 同时支持)
-- **Web Dashboard**: `http://127.0.0.1:9090/ui` (密码: `123456`)
+- **Web Dashboard**: `http://127.0.0.1:9090/ui` (密码为 `mihomo.yaml` 中 `secret` 字段的值, 仓库提交版本默认为 `123456`)
+- **局域网设备**: `allow-lan: true` 且放行 `0.0.0.0/0`，局域网设备使用本机局域网 IP + 端口即可，如 `http://<局域网 IP>:7890`
 
 ## 📝 自定义规则
 
@@ -292,7 +338,7 @@ IP-CIDR,10.0.0.0/8
 
 ### 启用 GeoDat 模式
 
-如需使用 `GEOSITE` / `GEOIP` 规则，取消 [`mihomo.yaml:29-34`](mihomo.yaml:29-34) 的注释：
+当前配置未启用 `geodata-mode` (规则全部基于远程规则集)。如需使用本地 `GEOSITE` / `GEOIP` 规则，在 `mihomo.yaml` 顶层手动添加：
 
 ```yaml
 geodata-mode: true
@@ -305,7 +351,7 @@ geox-url:
 
 ### 添加备用订阅
 
-取消 [`mihomo.yaml:47-52`](mihomo.yaml:47-52) 的注释：
+取消 [`mihomo.yaml:41-46`](mihomo.yaml:41-46) 中 `500G_LongTerm` 条目的注释并替换地址：
 
 ```yaml
 500G_LongTerm:
@@ -313,7 +359,7 @@ geox-url:
   url: '备用订阅地址'
   path: './proxy-providers/providers-2.yaml'
   override:
-    additional-prefix: "1.备 "
+    additional-prefix: "2. "
 ```
 
 ### 调整日志级别
@@ -337,8 +383,10 @@ external-ui-url: https://github.com/metacubex/metacubexd/archive/refs/heads/gh-p
 
 ## 📊 规则集来源
 
-分流规则配置使用 [MetaCubeX/meta-rules-dat](https://github.com/MetaCubeX/meta-rules-dat) 的规则集
+分流规则配置使用 [MetaCubeX/meta-rules-dat](https://github.com/MetaCubeX/meta-rules-dat) 的规则集 (其中 `apple_ip` / `telegram_ip` 使用其 `geo-lite` 轻量版)
 Fake-IP 过滤黑名单使用 [ShellCrash](https://github.com/juewuy/ShellCrash/blob/dev/public/fake_ip_filter.list) 规则集
+
+更新频率: 订阅每天更新一次 (`interval: 86400`)、健康检查每 300 秒一次；规则集每 12 小时更新一次 (`interval: 43200`)
 
 ### 域名规则集 (MRS 格式)
 
@@ -370,6 +418,7 @@ Fake-IP 过滤黑名单使用 [ShellCrash](https://github.com/juewuy/ShellCrash/
 
 - `custom_proxy`: 自定义代理规则 ([`Ruleset/Proxy.list`](Ruleset/Proxy.list))
 - `custom_direct`: 自定义直连规则 ([`Ruleset/Direct.list`](Ruleset/Direct.list))
+- `fakeipfilter`: Fake-IP 过滤黑名单 ([ShellCrash](https://github.com/juewuy/ShellCrash/blob/dev/public/fake_ip_filter.list), 域名/Text 格式)
 
 ## 🔍 常见问题
 
@@ -380,8 +429,6 @@ Fake-IP 过滤黑名单使用 [ShellCrash](https://github.com/juewuy/ShellCrash/
 - 真实 DNS 查询由 mihomo 根据规则路由
 - 代理域名的 DNS 查询会通过代理隧道发送
 - ISP 只能看到加密的代理流量
-
-详细分析见 [`plans/dns-leak-analysis.md`](plans/dns-leak-analysis.md)
 
 ### 2. 如何验证 DNS 是否泄露？
 
@@ -394,7 +441,7 @@ Fake-IP 过滤黑名单使用 [ShellCrash](https://github.com/juewuy/ShellCrash/
 
 ### 3. 为什么某些网站无法访问？
 
-可能是 Fake-IP 模式的兼容性问题，检查 [`mihomo.yaml:79-80`](mihomo.yaml:79-80) 的 `fake-ip-filter`。
+可能是 Fake-IP 模式的兼容性问题，检查 [`mihomo.yaml:72-74`](mihomo.yaml:72-74) 的 `fake-ip-filter`。
 
 需要直连的域名可添加到 [`Ruleset/Direct.list`](Ruleset/Direct.list)。
 
@@ -410,10 +457,10 @@ curl http://127.0.0.1:9090/proxies
 ### 5. 节点自动切换的逻辑是什么？
 
 - **URL-Test 模式**: 每 300 秒测速，选择延迟最低的节点 (容差 50ms)
-- **Fallback 模式**: 主节点失败后自动切换到备用节点
+- **Fallback 模式** (锚点已备好, 取消注释即可启用): 主节点失败后自动切换到备用节点
 - **健康检查**: 超时 2 秒判定失败，连续失败 3 次触发主动检查
 
-详见 [`mihomo.yaml:138-139`](mihomo.yaml:138-139)
+详见 [`mihomo.yaml:28`](mihomo.yaml:28) (订阅健康检查) 与 [`mihomo.yaml:128-131`](mihomo.yaml:128-131) (策略组锚点)
 
 ### 6. 如何测试不同节点的实际访问速度？
 
@@ -433,7 +480,7 @@ curl http://127.0.0.1:9090/proxies
 ```bash
 # 测试指定策略组的延迟
 curl "http://127.0.0.1:9090/proxies/♻️%20美国自动/delay?url=https://www.google.com&timeout=10000" \
-  -H "Authorization: Bearer 123456"
+  -H "Authorization: Bearer <mihomo.yaml 中的 secret 值>"
 ```
 
 ## 📚 参考资料
