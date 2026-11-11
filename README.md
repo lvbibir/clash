@@ -9,7 +9,6 @@
 ├── LICENSE
 ├── README.md
 ├── AGENTS.md                   # AI 上下文文档
-├── lvbibir.ini                 # ini 格式的 clash 配置文件 (⚠️已弃用, 不再更新)
 ├── mihomo-manager.ps1          # Windows 管理脚本 (启停/重载/延迟测试)
 ├── mihomo.yaml                 # mihomo 内核配置文件
 ├── scripts/                    # Git 自动脱敏工具
@@ -512,7 +511,6 @@ git 将不再跟踪权限位变化, `git status` 恢复干净. 注意该配置�
 ### 规则集
 
 - [Fakeipfilter-blacklist.list 来源](https://github.com/juewuy/ShellCrash/blob/dev/public/fake_ip_filter.list)
-- [lvbibir.ini 来源](https://yattazen.com/tutorial/clash-custom-config.html)
 
 ### 订阅转换
 
